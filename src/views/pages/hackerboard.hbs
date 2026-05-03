@@ -1,204 +1,214 @@
-    <div class="glitch">
-        <div class="glitch__img glitch__img_leaderboard"></div>
-        <div class="glitch__img glitch__img_leaderboard"></div>
-        <div class="glitch__img glitch__img_leaderboard"></div>
-        <div class="glitch__img glitch__img_leaderboard"></div>
-        <div class="glitch__img glitch__img_leaderboard"></div>
-    </div>
-        <div class="navbar-dark text-white">
-            <div class="container">
-                {{#if user}}
-                    {{#if (isRole user.role "admin")}}
-                        {{> navbar-admin}}
-                    {{else}}
-                        {{> navbar-auth}}
-                    {{/if}}
-                    {{else}}
-                    {{> navbar}}
-                {{/if}}
-            </div>
-        </div>
+<div class="glitch">
+  <div class="glitch__img glitch__img_leaderboard"></div>
+  <div class="glitch__img glitch__img_leaderboard"></div>
+  <div class="glitch__img glitch__img_leaderboard"></div>
+  <div class="glitch__img glitch__img_leaderboard"></div>
+  <div class="glitch__img glitch__img_leaderboard"></div>
+</div>
 
-    <div class="jumbotron bg-transparent mb-0 pt-3 radius-0">
-        <div class="container">
-            <div class="row">
-                <div class="col-xl-12">
-                    <h1 class="display-1 bold color_white content__title text-center"><span class="color_danger">HACKER</span>BOARD</h1>
-                    <p class="text-grey lead text-spacey text-center hackerFont">
-                        Where the world get's ranked!
-                    </p>
-                    <div class="row justify-content-center my-5">
-                        <div class="col-xl-10">
-                            <canvas id="myChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row mt-5 justify-content-center">
-                <div class="col-xl-10">
-                    <div class="table-responsive neon-table-container">
-                        <table class="table table-borderless neon-table text-center">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Team Name</th>
-                                <th>Challenges Solved</th>
-                                <th>Total Time Taken</th>
-                                <th>Score</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td><span class="team-name pink">liveoverflow</span></td>
-                                <td>8</td>
-                                <td>42:59</td>
-                                <td><span class="score pink">2540</span></td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td><span class="team-name red">CR007</span></td>
-                                <td>6</td>
-                                <td>44:59</td>
-                                <td><span class="score red">1900</span></td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td><span class="team-name green">anonymous</span></td>
-                                <td>4</td>
-                                <td>40:00</td>
-                                <td><span class="score green">650</span></td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td><span class="team-name blue">ashawe</span></td>
-                                <td>5</td>
-                                <td>40:10</td>
-                                <td><span class="score blue">550</span></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+<div class="navbar-dark text-white">
+  <div class="container">
+    {{#if user}}
+      {{#if (isRole user.role "admin")}}
+        {{> navbar-admin}}
+      {{else}}
+        {{> navbar-auth}}
+      {{/if}}
+    {{else}}
+      {{> navbar}}
+    {{/if}}
+  </div>
+</div>
+
+<div class="jumbotron bg-transparent mb-0 pt-3 radius-0">
+  <div class="container">
+    <div class="row">
+      <div class="col-xl-12">
+        <h1 class="display-1 bold color_white content__title text-center">
+          <span class="color_danger">HACKER</span>BOARD
+        </h1>
+
+        <p class="text-grey lead text-spacey text-center hackerFont">
+          {{message}}
+        </p>
+
+        <div class="row justify-content-center my-5">
+          <div class="col-xl-10">
+            <canvas id="myChart" style="min-height: 350px;"></canvas>
+          </div>
         </div>
+      </div>
     </div>
 
+    <div class="row mt-5 justify-content-center">
+      <div class="col-xl-10">
+        <div class="table-responsive neon-table-container">
+          <table class="table table-borderless neon-table text-center">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Team Name</th>
+                <th>Members</th>
+                <th>Challenges Solved</th>
+                <th>Score</th>
+                <th>Last Submission</th>
+              </tr>
+            </thead>
 
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+            <tbody>
+              {{#each teams}}
+              <tr>
+                <td>{{rank}}</td>
+               <td>
+                <span class="team-name bold"
+                  style="
+                    color: {{color}};
+                  ">
+                  {{#if (eq rank 1)}}🥇{{/if}}
+                  {{#if (eq rank 2)}}🥈{{/if}}
+                  {{#if (eq rank 3)}}🥉{{/if}}  
+                  {{name}}
+                </span>
+              </td>
+                <td><span class="team-name bold" style="color: {{color}}; text-shadow: 0 0 10px {{color}};">{{memberCount}}</span></td>
+                <td><span class="team-name bold" style="color: {{color}}; text-shadow: 0 0 10px {{color}};">{{solvedCount}}</span></td>
+                <td>
+                  <span class="score bold" style="color: {{color}}; text-shadow: 0 0 10px {{color}};">
+                    {{score}}
+                  </span>
+                </td>
+                <td>
+                  {{#if lastSubmission}}
+                    {{formatDate lastSubmission}}
+                  {{else}}
+                    —
+                  {{/if}}
+                </td>
+              </tr>
+              {{else}}
+              <tr>
+                <td colspan="6" class="text-center text-muted hackerFont">
+                  No teams found.
+                </td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
 <script>
+  const chartData = JSON.parse('{{{chartData}}}' || '[]');
   const ctx = document.getElementById("myChart").getContext("2d");
 
-  const gradientPink = ctx.createLinearGradient(0, 0, 0, 400);
-  gradientPink.addColorStop(0, "#ff99ff");
-  gradientPink.addColorStop(1, "#ff0099");
+  const allPoints = chartData.flatMap(team => team.data || []);
 
-  const chart = new Chart(ctx, {
+  const maxSolved = Math.max(1, ...allPoints.map(p => Number(p.x || 0)));
+  const maxScore = Math.max(0, ...allPoints.map(p => Number(p.y || 0)));
+
+  const niceMaxSolved = maxSolved + 1;
+  const niceMaxScore = maxScore <= 0
+    ? 100
+    : Math.ceil((maxScore + 100) / 100) * 100;
+
+  const stepSize = niceMaxScore <= 500
+    ? 100
+    : Math.ceil(niceMaxScore / 7 / 100) * 100;
+
+  const datasets = chartData.map((team, index) => {
+    const color = team.color || `hsl(${(index * 137.508) % 360}, 100%, 55%)`;
+
+    const data = (team.data || [])
+      .map(p => ({
+        x: Number(p.x || 0),
+        y: Number(p.y || 0),
+      }))
+      .filter(p => Number.isFinite(p.x) && Number.isFinite(p.y))
+      .sort((a, b) => a.x - b.x);
+
+    return {
+      label: team.label,
+      data,
+      borderColor: color,
+      backgroundColor: color,
+      pointStyle: "circle",
+      pointRadius: 5,
+      pointHoverRadius: 8,
+      pointBackgroundColor: color,
+      pointBorderColor: color,
+      borderWidth: 3,
+      tension: 0.4,
+      fill: false,
+      showLine: true,
+    };
+  });
+
+  new Chart(ctx, {
     type: "line",
-    data: {
-      datasets: [
-        {
-          label: "liveoverflow",
-          borderColor: gradientPink,
-          borderWidth: 3,
-          pointRadius: 4,
-          pointBackgroundColor: "#ff66cc",
-          data: [
-            { x: 0, y: 100 },
-            { x: 1, y: 700 },
-            { x: 2, y: 1600 },
-            { x: 3, y: 2400 },
-            { x: 4, y: 3200 },
-          ],
-          tension: 0.4,
-        },
-        {
-          label: "CR007",
-          borderColor: "#ff0000",
-          borderWidth: 3,
-          pointRadius: 4,
-          pointBackgroundColor: "#ff0000",
-          data: [
-            { x: 0, y: 100 },
-            { x: 1, y: 500 },
-            { x: 2, y: 950 },
-            { x: 3, y: 1550 },
-            { x: 4, y: 1900 },
-          ],
-          tension: 0.4,
-        },
-        {
-          label: "anonymous", 
-          borderColor: "#00ff99",
-          borderWidth: 3,
-          pointRadius: 4,
-          pointBackgroundColor: "#00ff99",
-          data: [
-            { x: 0, y: 100 },
-            { x: 1, y: 300 },
-            { x: 2, y: 600 },
-            { x: 3, y: 850 },
-            { x: 4, y: 1100 },
-          ],
-          tension: 0.4,
-        },
-        {
-          label: "ashawe",
-          borderColor: "#3399ff",
-          borderWidth: 3,
-          pointRadius: 4,
-          pointBackgroundColor: "#3399ff",
-          data: [
-            { x: 0, y: 100 },
-            { x: 1, y: 200 },
-            { x: 2, y: 320 },
-            { x: 3, y: 430 },
-            { x: 4, y: 550 },
-          ],
-          tension: 0.4,
-        },
-      ],
-    },
+    data: { datasets },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      parsing: false,
       plugins: {
         legend: {
           labels: {
             color: "#00ffff",
-            font: { family: "Hack", size: 14 },
+            usePointStyle: true,
+            pointStyle: "circle",
+            boxWidth: 10,
+            boxHeight: 10,
+            font: {
+              family: "Hack",
+              size: 14,
+            },
           },
         },
         tooltip: {
-          backgroundColor: "rgba(0, 255, 255, 0.15)",
+          backgroundColor: "rgba(0,255,255,0.15)",
           borderColor: "#00ffff",
           borderWidth: 1,
           titleColor: "#fff",
           bodyColor: "#fff",
-          displayColors: false,
+          displayColors: true,
+          callbacks: {
+            title: (items) => `${items[0].parsed.x} challenge solved`,
+            label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y} pts`,
+          },
         },
       },
       scales: {
         x: {
           type: "linear",
-          min: -0.3,
-          max: 4.3,
+          min: 0,
+          max: niceMaxSolved,
           title: {
             display: true,
             text: "Challenges Solved",
             color: "#00ffff",
             font: { family: "Hack", size: 14 },
           },
-          ticks: { color: "#aaa", font: { family: "Hack" } },
-          grid: { color: "rgba(0,255,255,0.1)" },
+          ticks: {
+            color: "#aaa",
+            stepSize: 1,
+            font: { family: "Hack" },
+          },
+          grid: {
+            color: "rgba(0,255,255,0.1)",
+          },
         },
         y: {
           beginAtZero: true,
           min: 0,
-          max: 3500,
+          suggestedMax: niceMaxScore,
           title: {
             display: true,
             text: "Score",
@@ -207,10 +217,12 @@
           },
           ticks: {
             color: "#aaa",
+            stepSize,
             font: { family: "Hack" },
-            stepSize: 500,
           },
-          grid: { color: "rgba(0,255,255,0.1)" },
+          grid: {
+            color: "rgba(0,255,255,0.1)",
+          },
         },
       },
       elements: {

@@ -21,8 +21,11 @@ app.engine(
     extname: ".hbs",
     helpers: {
       eq: (a, b) => {
-        if (!a || !b) return false;
-        return a.replace(/\/$/, "") === b.replace(/\/$/, "");
+        if (a === undefined || a === null || b === undefined || b === null) {
+          return false;
+        }
+
+        return String(a).replace(/\/$/, "") === String(b).replace(/\/$/, "");
       },
       isRole: (role, expectedRole) => {
         return role === expectedRole;
@@ -41,6 +44,20 @@ app.engine(
       },
       json: (context) => JSON.stringify(context),
       inc: (v) => v + 1,
+      formatDate: (date) => {
+        if (!date) return "—";
+
+        return new Date(date).toLocaleString("vi-VN", {
+          timeZone: "Asia/Ho_Chi_Minh",
+          hour12: false,
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+      },
     },
 
     partialsDir: [

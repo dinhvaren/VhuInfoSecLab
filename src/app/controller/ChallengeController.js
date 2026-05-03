@@ -1,4 +1,4 @@
-const { Challenge } = require("../models/index");
+const { Challenge, Submission } = require("../models/index");
 
 class ChallengeController {
   // [GET] /challenges
@@ -8,10 +8,37 @@ class ChallengeController {
       if (req.query.status) filter.status = req.query.status;
       else filter.status = "Active";
 
-      const challenges = await Challenge.find(filter)
+      const userId = req.user?.id || req.session?.user?.id;
+
+      let challenges = await Challenge.find(filter)
         .select("-flag")
         .sort({ points: 1 })
         .lean();
+
+      if (userId) {
+        const solvedSubmissions = await Submission.find({
+          user: userId,
+          isCorrect: true,
+        })
+          .select("challenge flag")
+          .lean();
+
+        const solvedMap = {};
+
+        solvedSubmissions.forEach((submission) => {
+          solvedMap[submission.challenge.toString()] = submission.flag;
+        });
+
+        challenges = challenges.map((challenge) => {
+          const submittedFlag = solvedMap[challenge._id.toString()];
+
+          return {
+            ...challenge,
+            solved: !!submittedFlag,
+            submittedFlag: submittedFlag || "",
+          };
+        });
+      }
 
       res.status(200).json({
         message: "Challenges retrieved successfully.",
@@ -20,7 +47,9 @@ class ChallengeController {
       });
     } catch (err) {
       console.error("GetAll Challenges Error:", err);
-      res.status(500).json({ message: "Server error while retrieving challenges." });
+      res
+        .status(500)
+        .json({ message: "Server error while retrieving challenges." });
     }
   }
 
@@ -37,14 +66,25 @@ class ChallengeController {
       res.status(200).json({ challenge });
     } catch (err) {
       console.error("Get Challenge By ID Error:", err);
-      res.status(500).json({ message: "Server error while retrieving challenge." });
+      res
+        .status(500)
+        .json({ message: "Server error while retrieving challenge." });
     }
   }
 
   // [POST] /challenges
   async create(req, res) {
     try {
-      const { title, category, points, difficulty, description, attachments, flag, status } = req.body;
+      const {
+        title,
+        category,
+        points,
+        difficulty,
+        description,
+        attachments,
+        flag,
+        status,
+      } = req.body;
 
       if (!title || !category || !points || !flag) {
         return res.status(400).json({ message: "Missing required fields." });
@@ -52,7 +92,9 @@ class ChallengeController {
 
       const exists = await Challenge.findOne({ title });
       if (exists) {
-        return res.status(400).json({ message: "Challenge title already exists." });
+        return res
+          .status(400)
+          .json({ message: "Challenge title already exists." });
       }
 
       const newChallenge = await Challenge.create({
@@ -78,7 +120,9 @@ class ChallengeController {
       });
     } catch (err) {
       console.error("Create Challenge Error:", err);
-      res.status(500).json({ message: "Server error while creating challenge." });
+      res
+        .status(500)
+        .json({ message: "Server error while creating challenge." });
     }
   }
 
@@ -86,7 +130,16 @@ class ChallengeController {
   async update(req, res) {
     try {
       const { id } = req.params;
-      const { title, category, points, difficulty, description, attachments, flag, status } = req.body;
+      const {
+        title,
+        category,
+        points,
+        difficulty,
+        description,
+        attachments,
+        flag,
+        status,
+      } = req.body;
 
       const challenge = await Challenge.findById(id);
       if (!challenge) {
@@ -116,7 +169,9 @@ class ChallengeController {
       });
     } catch (err) {
       console.error("Update Challenge Error:", err);
-      res.status(500).json({ message: "Server error while updating challenge." });
+      res
+        .status(500)
+        .json({ message: "Server error while updating challenge." });
     }
   }
 
@@ -133,7 +188,9 @@ class ChallengeController {
       res.status(200).json({ message: "Challenge deleted successfully." });
     } catch (err) {
       console.error("Delete Challenge Error:", err);
-      res.status(500).json({ message: "Server error while deleting challenge." });
+      res
+        .status(500)
+        .json({ message: "Server error while deleting challenge." });
     }
   }
 

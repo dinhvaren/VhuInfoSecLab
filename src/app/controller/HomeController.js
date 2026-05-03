@@ -38,15 +38,119 @@ class HomeController {
   // [GET] /hackerboard
   async hackerboard(req, res) {
     try {
+      const getTeamColor = (index) => {
+        const hue = (index * 137.508) % 360;
+        return `hsl(${hue}, 100%, 55%)`;
+      };
+
       const teams = await Team.find()
         .sort({ score: -1 })
-        .limit(10)
-        .populate("members");
+        .populate("members", "username")
+        .lean();
+
+      const teamIds = teams.map((team) => team._id);
+
+      const solvedStats = await Submission.aggregate([
+        {
+          $match: {
+            team: { $in: teamIds },
+            isCorrect: true,
+          },
+        },
+        {
+          $group: {
+            _id: "$team",
+            solved: { $addToSet: "$challenge" },
+            lastSubmission: { $max: "$submittedAt" },
+          },
+        },
+        {
+          $project: {
+            solvedCount: { $size: "$solved" },
+            lastSubmission: 1,
+          },
+        },
+      ]);
+
+      const statMap = {};
+      solvedStats.forEach((item) => {
+        statMap[item._id.toString()] = item;
+      });
+
+      const leaderboard = teams.map((team) => {
+        const stat = statMap[team._id.toString()] || {};
+
+        return {
+          ...team,
+          score: Number(team.score || 0),
+          solvedCount: stat.solvedCount || 0,
+          memberCount: team.members?.length || 0,
+          lastSubmission: stat.lastSubmission || null,
+        };
+      });
+
+      leaderboard.sort((a, b) => {
+        if ((b.score || 0) !== (a.score || 0)) {
+          return (b.score || 0) - (a.score || 0);
+        }
+
+        const aTime = a.lastSubmission
+          ? new Date(a.lastSubmission).getTime()
+          : Infinity;
+        const bTime = b.lastSubmission
+          ? new Date(b.lastSubmission).getTime()
+          : Infinity;
+
+        return aTime - bTime;
+      });
+
+      leaderboard.forEach((team, index) => {
+        team.rank = index + 1;
+        team.color = getTeamColor(index);
+      });
+
+      const chartData = await Promise.all(
+        leaderboard.map(async (team) => {
+          const submissions = await Submission.find({
+            team: team._id,
+            isCorrect: true,
+          })
+            .sort({ submittedAt: 1 })
+            .populate("challenge", "points")
+            .lean();
+
+          const solvedSet = new Set();
+          let totalScore = 0;
+          const points = [{ x: 0, y: 0 }];
+
+          for (const submission of submissions) {
+            if (!submission.challenge) continue;
+
+            const challengeId = submission.challenge._id.toString();
+            if (solvedSet.has(challengeId)) continue;
+
+            solvedSet.add(challengeId);
+            totalScore += Number(submission.challenge.points || 0);
+
+            points.push({
+              x: solvedSet.size,
+              y: totalScore,
+            });
+          }
+
+          return {
+            label: team.name,
+            color: team.color,
+            data: points,
+          };
+        }),
+      );
 
       res.render("pages/hackerboard", {
         title: "Hackerboard | VHU InfoSec Lab",
-        message: "Top 10 teams in the VHU CTF Platform.",
-        teams,
+        message: "All teams in the VHU CTF Platform.",
+        teams: leaderboard,
+        chartData: JSON.stringify(chartData),
         currentPath: req.path,
       });
     } catch (err) {
@@ -61,16 +165,52 @@ class HomeController {
   // [GET] /challenges
   async challenges(req, res) {
     try {
-      const challenges = await Challenge.find({ status: "Active" })
+      const userId = req.user?.id || req.session?.user?.id;
+
+      let challenges = await Challenge.find({ status: "Active" })
         .select("-flag")
         .sort({ points: 1 })
         .lean();
+
+      if (userId) {
+        const solvedSubmissions = await Submission.find({
+          user: userId,
+          isCorrect: true,
+        })
+          .select("challenge flag")
+          .lean();
+
+        const solvedMap = {};
+
+        solvedSubmissions.forEach((submission) => {
+          if (submission.challenge) {
+            solvedMap[submission.challenge.toString()] = submission.flag;
+          }
+        });
+
+        challenges = challenges.map((challenge) => {
+          const submittedFlag = solvedMap[challenge._id.toString()];
+
+          return {
+            ...challenge,
+            solved: Boolean(submittedFlag),
+            submittedFlag: submittedFlag || "",
+          };
+        });
+      } else {
+        challenges = challenges.map((challenge) => ({
+          ...challenge,
+          solved: false,
+          submittedFlag: "",
+        }));
+      }
 
       res.render("pages/challenges-user", {
         title: "Challenges | VHU InfoSec Lab",
         message: "Select a challenge and start hacking!",
         challenges,
         currentPath: req.originalUrl.split("?")[0],
+        user: req.user || req.session?.user,
       });
     } catch (err) {
       console.error("Challenges Error:", err);
@@ -80,6 +220,7 @@ class HomeController {
       });
     }
   }
+  
   // [GET] /feedback
   feedback(req, res) {
     try {

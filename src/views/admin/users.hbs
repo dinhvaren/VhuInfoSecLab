@@ -2,18 +2,15 @@
   <div class="glitch__img"></div>
 </div>
 
-  <!-- Navbar -->
-  <div class="navbar-dark text-white">
-    <div class="container">
-      {{> navbar-admin}}
-    </div>
+<div class="navbar-dark text-white">
+  <div class="container">
+    {{> navbar-admin}}
   </div>
+</div>
 
-<!-- Main content -->
 <div class="jumbotron bg-transparent mb-0 pt-3 radius-0">
   <div class="container">
     <div class="row">
-      <!-- Sidebar -->
       <div class="col-md-3">
         <h4 class="bold color_white mb-4">Admin Panel</h4>
         <div class="list-group">
@@ -26,7 +23,6 @@
         </div>
       </div>
 
-      <!-- Main Table -->
       <div class="col-md-9">
         <h2 class="bold color_white mb-4">Manage Users</h2>
 
@@ -36,15 +32,16 @@
               <th>#</th>
               <th>Username</th>
               <th>Email</th>
-              <th>Team ID</th>
+              <th>Team</th>
               <th>Role</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
+
           <tbody class="hackerFont">
             {{#each users}}
-            <tr data-id="{{_id}}">
+            <tr data-id="{{_id}}" data-team-id="{{#if team}}{{team._id}}{{/if}}">
               <td>{{inc @index}}</td>
               <td>{{username}}</td>
               <td>{{email}}</td>
@@ -56,8 +53,12 @@
                 </span>
               </td>
               <td>
-                <button class="btn btn-sm btn-outline-primary mr-1 editBtn"><i class="fas fa-edit"></i></button>
-                <button class="btn btn-sm btn-outline-danger deleteBtn"><i class="fas fa-trash"></i></button>
+                <button class="btn btn-sm btn-outline-primary mr-1 editBtn">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger deleteBtn">
+                  <i class="fas fa-trash"></i>
+                </button>
               </td>
             </tr>
             {{/each}}
@@ -72,37 +73,61 @@
   </div>
 </div>
 
-<!-- 🟢 Add User Modal -->
 <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content bg-dark text-light border border-danger">
       <div class="modal-header border-danger">
         <h5 class="modal-title color_danger bold">➕ Add New User</h5>
-        <button type="button" class="close text-light" data-dismiss="modal"><span>&times;</span></button>
+        <button type="button" class="close text-light" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
       </div>
+
       <div class="modal-body hackerFont">
         <form id="addUserForm">
           <div class="form-group">
             <label>Username</label>
             <input type="text" class="form-control bg-transparent text-light" id="addUsername" required>
           </div>
+
           <div class="form-group">
             <label>Email</label>
             <input type="email" class="form-control bg-transparent text-light" id="addEmail" required>
           </div>
+
           <div class="form-group">
-            <label>Team ID</label>
-            <input type="text" class="form-control bg-transparent text-light" id="addTeamID" placeholder="e.g., T001">
+            <label>Password</label>
+            <input type="password" class="form-control bg-transparent text-light" id="addPassword" placeholder="Default: 123456">
           </div>
+
+          <div class="form-group">
+            <label>Team</label>
+            <select class="form-control bg-dark text-light" id="addTeam">
+              <option value="">No Team</option>
+              {{#each teams}}
+                <option value="{{_id}}">{{name}}</option>
+              {{/each}}
+            </select>
+          </div>
+
           <div class="form-group">
             <label>Role</label>
-            <select class="form-control bg-transparent text-light" id="addRole">
-              <option>User</option>
-              <option>Admin</option>
+            <select class="form-control bg-dark text-light" id="addRole">
+              <option value="User">User</option>
+              <option value="Admin">Admin</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Status</label>
+            <select class="form-control bg-dark text-light" id="addStatus">
+              <option value="active">active</option>
+              <option value="inactive">inactive</option>
             </select>
           </div>
         </form>
       </div>
+
       <div class="modal-footer border-danger">
         <button class="btn btn-outline-light" data-dismiss="modal">Cancel</button>
         <button class="btn btn-outline-danger" id="saveAdd">Add User</button>
@@ -111,38 +136,63 @@
   </div>
 </div>
 
-<!-- 🟡 Edit User Modal -->
 <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content bg-dark text-light border border-warning">
       <div class="modal-header border-warning">
         <h5 class="modal-title color_danger bold">✏️ Edit User</h5>
-        <button type="button" class="close text-light" data-dismiss="modal"><span>&times;</span></button>
+        <button type="button" class="close text-light" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
       </div>
+
       <div class="modal-body hackerFont">
         <form id="editUserForm">
-          <input type="hidden" id="editRowIndex">
+          <input type="hidden" id="editUserId">
+
           <div class="form-group">
             <label>Username</label>
             <input type="text" class="form-control bg-transparent text-light" id="editUsername" required>
           </div>
+
           <div class="form-group">
             <label>Email</label>
             <input type="email" class="form-control bg-transparent text-light" id="editEmail" required>
           </div>
+
           <div class="form-group">
-            <label>Team ID</label>
-            <input type="text" class="form-control bg-transparent text-light" id="editTeamID">
+            <label>Password</label>
+            <input type="password" class="form-control bg-transparent text-light" id="editPassword" placeholder="Leave blank to keep old password">
           </div>
+
+          <div class="form-group">
+            <label>Team</label>
+            <select class="form-control bg-dark text-light" id="editTeam">
+              <option value="">No Team</option>
+              {{#each teams}}
+                <option value="{{_id}}">{{name}}</option>
+              {{/each}}
+            </select>
+          </div>
+
           <div class="form-group">
             <label>Role</label>
-            <select class="form-control bg-transparent text-light" id="editRole">
-              <option>User</option>
-              <option>Admin</option>
+            <select class="form-control bg-dark text-light" id="editRole">
+              <option value="User">User</option>
+              <option value="Admin">Admin</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Status</label>
+            <select class="form-control bg-dark text-light" id="editStatus">
+              <option value="active">active</option>
+              <option value="inactive">inactive</option>
             </select>
           </div>
         </form>
       </div>
+
       <div class="modal-footer border-warning">
         <button class="btn btn-outline-light" data-dismiss="modal">Cancel</button>
         <button class="btn btn-outline-warning" id="saveEdit">Save Changes</button>
@@ -151,17 +201,20 @@
   </div>
 </div>
 
-<!-- 🔴 Delete Confirmation Modal -->
 <div class="modal fade" id="deleteUserModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content bg-dark text-light border border-danger">
       <div class="modal-header border-danger">
         <h5 class="modal-title color_danger bold">⚠️ Confirm Deletion</h5>
-        <button type="button" class="close text-light" data-dismiss="modal"><span>&times;</span></button>
+        <button type="button" class="close text-light" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
       </div>
+
       <div class="modal-body hackerFont">
         Are you sure you want to delete this user? This action cannot be undone.
       </div>
+
       <div class="modal-footer border-danger">
         <button class="btn btn-outline-light" data-dismiss="modal">Cancel</button>
         <button class="btn btn-outline-danger" id="confirmDelete">Delete</button>
@@ -170,7 +223,6 @@
   </div>
 </div>
 
-<!-- 🔔 Toast Notification -->
 <div aria-live="polite" aria-atomic="true" style="position: fixed; top: 1rem; right: 1rem; z-index: 9999;">
   <div id="toastMsg" class="toast bg-dark text-light border border-danger" data-delay="3000">
     <div class="toast-header bg-danger text-white">
@@ -181,14 +233,11 @@
   </div>
 </div>
 
-<!-- JS -->
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
-<!-- Toast + Logic -->
 <script>
-  // 🟢 Global Toast Function
   function showToast(type, message) {
     const toast = $("#toastMsg");
     const title = $("#toastTitle");
@@ -205,7 +254,7 @@
       $(".toast-header").addClass("bg-danger text-white");
       toast.addClass("border-danger");
       title.text("❌ Error");
-    } else if (type === "warning") {
+    } else {
       $(".toast-header").addClass("bg-warning text-dark");
       toast.addClass("border-warning");
       title.text("⚠️ Warning");
@@ -216,33 +265,39 @@
     toast.toast("show");
   }
 
-  // CRUD Logic
-  const table = document.getElementById("userTable").getElementsByTagName("tbody")[0];
   let deleteRow = null;
   let deleteId = null;
 
-  // 🟢 ADD USER
   $("#saveAdd").on("click", async function () {
     const username = $("#addUsername").val().trim();
     const email = $("#addEmail").val().trim();
+    const password = $("#addPassword").val().trim();
     const role = $("#addRole").val();
-    const teamID = $("#addTeamID").val().trim() || null;
+    const status = $("#addStatus").val();
+    const team = $("#addTeam").val() || null;
 
-    if (!username || !email)
+    if (!username || !email) {
       return showToast("warning", "Please fill in username and email.");
+    }
 
     try {
+      const payload = { username, email, role, status, team };
+
+      if (password) {
+        payload.password = password;
+      }
+
       const res = await fetch("/user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, role, teamID })
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to add user.");
 
       showToast("success", data.message || "User added successfully!");
-      setTimeout(() => window.location.reload(), 2000);
+      setTimeout(() => window.location.reload(), 1000);
     } catch (err) {
       console.error("Add User Error:", err);
       showToast("error", err.message);
@@ -252,40 +307,53 @@
     }
   });
 
-  // 🟡 EDIT USER
   $(document).on("click", ".editBtn", function () {
-    const row = $(this).closest("tr")[0];
-    const id = row.getAttribute("data-id");
-    $("#editRowIndex").val(id);
-    $("#editUsername").val(row.cells[1].innerText);
-    $("#editEmail").val(row.cells[2].innerText);
-    $("#editTeamID").val(row.cells[3].innerText);
-    $("#editRole").val(row.cells[4].innerText);
+    const row = $(this).closest("tr");
+    const id = row.data("id");
+    const teamId = row.data("team-id") || "";
+
+    $("#editUserId").val(id);
+    $("#editUsername").val(row.find("td").eq(1).text().trim());
+    $("#editEmail").val(row.find("td").eq(2).text().trim());
+    $("#editTeam").val(teamId);
+    $("#editRole").val(row.find("td").eq(4).text().trim());
+    $("#editStatus").val(row.find("td").eq(5).text().trim());
+    $("#editPassword").val("");
+
     $("#editUserModal").modal("show");
   });
 
   $("#saveEdit").on("click", async function () {
-    const id = $("#editRowIndex").val();
+    const id = $("#editUserId").val();
     const username = $("#editUsername").val().trim();
     const email = $("#editEmail").val().trim();
-    const teamID = $("#editTeamID").val().trim();
+    const password = $("#editPassword").val().trim();
+    const team = $("#editTeam").val() || null;
     const role = $("#editRole").val();
+    const status = $("#editStatus").val();
 
-    if (!id || !username || !email)
+    if (!id || !username || !email) {
       return showToast("warning", "Please fill in all required fields.");
+    }
 
     try {
+      const payload = { username, email, team, role, status };
+
+      if (password) {
+        payload.password = password;
+      }
+
       const res = await fetch(`/user/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, teamID, role })
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to update user.");
 
       showToast("success", data.message || "User updated successfully!");
-      setTimeout(() => window.location.reload(), 2000);
+      setTimeout(() => window.location.reload(), 1000);
     } catch (err) {
       console.error("Edit User Error:", err);
       showToast("error", err.message);
@@ -294,11 +362,10 @@
     }
   });
 
-  // 🔴 DELETE USER
   $(document).on("click", ".deleteBtn", function () {
-    const row = $(this).closest("tr")[0];
+    const row = $(this).closest("tr");
     deleteRow = row;
-    deleteId = row.getAttribute("data-id");
+    deleteId = row.data("id");
     $("#deleteUserModal").modal("show");
   });
 
@@ -306,9 +373,11 @@
     if (!deleteId) return;
 
     try {
-      const res = await fetch(`/user/${deleteId}`, { method: "DELETE" });
-      const data = await res.json();
+      const res = await fetch(`/user/${deleteId}`, {
+        method: "DELETE",
+      });
 
+      const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to delete user.");
 
       deleteRow.remove();

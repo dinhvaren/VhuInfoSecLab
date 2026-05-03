@@ -1,157 +1,181 @@
- <!-- Background glitch -->
-  <div class="glitch">
-    <div class="glitch__img"></div>
-    <div class="glitch__img"></div>
-    <div class="glitch__img"></div>
-    <div class="glitch__img"></div>
-  </div>
+<div class="glitch">
+  <div class="glitch__img"></div>
+  <div class="glitch__img"></div>
+  <div class="glitch__img"></div>
+  <div class="glitch__img"></div>
+</div>
 
-  <!-- Navbar -->
-  <div class="navbar-dark text-white">
-    <div class="container">
-      {{> navbar-admin}}
-    </div>
+<div class="navbar-dark text-white">
+  <div class="container">
+    {{> navbar-admin}}
   </div>
+</div>
 
-  <!-- Main Content -->
- <div class="jumbotron bg-transparent mb-0 pt-3 pb-0 radius-0" style="padding-bottom:0; margin-bottom:0;">
-    <div class="container">
-      <div class="row">
-        <!-- Sidebar -->
-        <div class="col-md-3">
-          <h4 class="bold color_white mb-4">Admin Panel</h4>
-          <div class="list-group">
-            <a href="/admin" class="list-group-item list-group-item-action">Dashboard</a>
-            <a href="/admin/leaderboard" class="list-group-item list-group-item-action active">Leaderboard</a>
-            <a href="/admin/users" class="list-group-item list-group-item-action">Users</a>
-            <a href="/admin/teams" class="list-group-item list-group-item-action">Teams</a>
-            <a href="/admin/challenges" class="list-group-item list-group-item-action">Challenges</a>
-            <a href="/admin/submissions" class="list-group-item list-group-item-action">Submissions</a>
-          </div>
+<div class="jumbotron bg-transparent mb-0 pt-3 pb-0 radius-0">
+  <div class="container">
+    <div class="row">
+
+      <!-- Sidebar -->
+      <div class="col-md-3">
+        <h4 class="bold color_white mb-4">Admin Panel</h4>
+
+        <div class="list-group">
+          <a href="/admin" class="list-group-item list-group-item-action">Dashboard</a>
+          <a href="/admin/leaderboard" class="list-group-item list-group-item-action active">Leaderboard</a>
+          <a href="/admin/users" class="list-group-item list-group-item-action">Users</a>
+          <a href="/admin/teams" class="list-group-item list-group-item-action">Teams</a>
+          <a href="/admin/challenges" class="list-group-item list-group-item-action">Challenges</a>
+          <a href="/admin/submissions" class="list-group-item list-group-item-action">Submissions</a>
         </div>
+      </div>
 
-        <!-- Main -->
-        <div class="col-md-9">
-          <h2 class="bold color_white mb-4">Leaderboard</h2>
-          <p class="text-grey lead hackerFont">Live ranking of all participating teams.</p>
+      <!-- Main -->
+      <div class="col-md-9">
+        <h2 class="bold color_white mb-4">Leaderboard</h2>
+        <p class="text-grey lead hackerFont">
+          Live ranking of all participating teams.
+        </p>
 
-          <!-- Chart Section -->
-          <div class="card bg-transparent border border-light mb-4">
-            <div class="card-body">
-              <h5 class="color_white mb-3">📈 Score Progression</h5>
-              <canvas id="leaderChart" height="100"></canvas>
+        <!-- Chart -->
+        <div class="card bg-transparent border border-light mb-4">
+          <div class="card-body">
+            <h5 class="color_white mb-3">📈 Score Progression</h5>
+
+            <div style="position: relative; height: 360px; width: 100%;">
+              <canvas id="leaderChart"></canvas>
             </div>
           </div>
-
-          <!-- Table -->
-          <table class="table table-hover table-striped text-light">
-            <thead class="thead-dark">
-              <tr>
-                <th>#</th>
-                <th>Team Name</th>
-                <th>Challenges Solved</th>
-                <th>Total Flags</th>
-                <th>Score</th>
-                <th>Last Submission</th>
-              </tr>
-            </thead>
-            <tbody class="hackerFont">
-              <tr>
-                <td>1</td>
-                <td>CyberVHU</td>
-                <td>8</td>
-                <td>10</td>
-                <td><span class="color_danger bold">2540</span></td>
-                <td>13:22:14</td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>Rooted</td>
-                <td>7</td>
-                <td>8</td>
-                <td><span class="color_danger bold">1980</span></td>
-                <td>13:45:00</td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td>BinaryBoys</td>
-                <td>6</td>
-                <td>7</td>
-                <td><span class="color_danger bold">1540</span></td>
-                <td>14:10:55</td>
-              </tr>
-              <tr>
-                <td>4</td>
-                <td>NullHackers</td>
-                <td>4</td>
-                <td>5</td>
-                <td><span class="color_danger bold">890</span></td>
-                <td>14:42:31</td>
-              </tr>
-            </tbody>
-          </table>
         </div>
+
+        <!-- Table -->
+        <table class="table table-hover table-striped text-light">
+          <thead class="thead-dark">
+            <tr>
+              <th>#</th>
+              <th>Team Name</th>
+              <th>Members</th>
+              <th>Challenges Solved</th>
+              <th>Total Flags</th>
+              <th>Score</th>
+              <th>Last Submission</th>
+            </tr>
+          </thead>
+
+          <tbody class="hackerFont">
+            {{#each teams}}
+            <tr>
+              <td>{{rank}}</td>
+              <td>{{name}}</td>
+              <td>{{memberCount}}</td>
+              <td>{{solvedCount}}</td>
+              <td>{{totalFlags}}</td>
+              <td>
+                <span class="color_danger bold">{{score}}</span>
+              </td>
+              <td>
+                {{#if lastSubmission}}
+                  {{formatDate lastSubmission}}
+                {{else}}
+                  —
+                {{/if}}
+              </td>
+            </tr>
+            {{else}}
+            <tr>
+              <td colspan="7" class="text-center text-muted">
+                No teams found.
+              </td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Scripts -->
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 
-  <script>
-    const ctx = document.getElementById("leaderChart").getContext("2d");
-    new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-        datasets: [
-          {
-            label: "CyberVHU",
-            borderColor: "#00ffff",
-            borderWidth: 2,
-            pointRadius: 4,
-            pointBackgroundColor: "#00ffff",
-            data: [100, 300, 800, 1200, 1800, 2300, 2540],
-            tension: 0.4,
+<script>
+  const chartData = {{{chartData}}};
+  const ctx = document.getElementById("leaderChart").getContext("2d");
+
+  new Chart(ctx, {
+    type: "line",
+    data: {
+      datasets: chartData.map((team) => ({
+        label: team.label,
+        data: team.data,
+        borderColor: team.color,
+        backgroundColor: team.color,
+        borderWidth: 2,
+        tension: 0.25,
+        fill: false,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+      })),
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      parsing: false,
+
+      plugins: {
+        legend: {
+          labels: {
+            color: "#fff",
           },
-          {
-            label: "Rooted",
-            borderColor: "#ff0000",
-            borderWidth: 2,
-            pointRadius: 4,
-            pointBackgroundColor: "#ff0000",
-            data: [100, 200, 400, 900, 1400, 1800, 1980],
-            tension: 0.4,
-          },
-          {
-            label: "BinaryBoys",
-            borderColor: "#33ff66",
-            borderWidth: 2,
-            pointRadius: 4,
-            pointBackgroundColor: "#33ff66",
-            data: [100, 200, 350, 600, 900, 1300, 1540],
-            tension: 0.4,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { labels: { color: "#fff" } },
         },
-        scales: {
-          x: {
-            ticks: { color: "#aaa" },
-            grid: { color: "rgba(0,255,255,0.1)" },
-          },
-          y: {
-            ticks: { color: "#aaa" },
-            grid: { color: "rgba(0,255,255,0.1)" },
+        tooltip: {
+          callbacks: {
+            title: function (items) {
+              return "Solved: " + items[0].parsed.x;
+            },
+            label: function (item) {
+              return item.dataset.label + ": " + item.parsed.y + " pts";
+            },
           },
         },
       },
-    });
-  </script>
+
+      scales: {
+        x: {
+          type: "linear",
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: "Challenges Solved",
+            color: "#fff",
+          },
+          ticks: {
+            color: "#aaa",
+            stepSize: 1,
+            precision: 0,
+          },
+          grid: {
+            color: "rgba(0,255,255,0.1)",
+          },
+        },
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: "Score",
+            color: "#fff",
+          },
+          ticks: {
+            color: "#aaa",
+          },
+          grid: {
+            color: "rgba(0,255,255,0.1)",
+          },
+        },
+      },
+    },
+  });
+</script>

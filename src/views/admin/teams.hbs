@@ -2,18 +2,15 @@
   <div class="glitch__img"></div>
 </div>
 
-  <!-- Navbar -->
-  <div class="navbar-dark text-white">
-    <div class="container">
-      {{> navbar-admin}}
-    </div>
+<div class="navbar-dark text-white">
+  <div class="container">
+    {{> navbar-admin}}
   </div>
+</div>
 
-<!-- Main -->
 <div class="jumbotron bg-transparent mb-0 pt-3 radius-0">
   <div class="container">
     <div class="row">
-      <!-- Sidebar -->
       <div class="col-md-3">
         <h4 class="bold color_white mb-4">Admin Panel</h4>
         <div class="list-group">
@@ -26,41 +23,59 @@
         </div>
       </div>
 
-      <!-- Main Content -->
       <div class="col-md-9">
         <h2 class="bold color_white mb-4">Manage Teams</h2>
 
-        <table class="table table-hover table-striped text-light" id="teamTable">
-          <thead class="thead-dark">
-            <tr>
-              <th>ID</th>
-              <th>Team Name</th>
-              <th>Members</th>
-              <th>Score</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody class="hackerFont">
-            {{#each teams}}
-            <tr data-id="{{_id}}">
-              <td>{{teamId}}</td>
-              <td>{{name}}</td>
-              <td>{{members.length}}</td>
-              <td>{{score}}</td>
-              <td>
-                <span class="badge {{#if (eq status 'active')}}badge-success{{else}}badge-warning{{/if}}">
-                  {{status}}
-                </span>
-              </td>
-              <td>
-                <button class="btn btn-sm btn-outline-primary mr-1 editBtn"><i class="fas fa-edit"></i></button>
-                <button class="btn btn-sm btn-outline-danger deleteBtn"><i class="fas fa-trash"></i></button>
-              </td>
-            </tr>
-            {{/each}}
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <table class="table table-hover table-striped text-light" id="teamTable">
+            <thead class="thead-dark">
+              <tr>
+                <th>#</th>
+                <th>Team ID</th>
+                <th>Team Name</th>
+                <th>Members</th>
+                <th>Score</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+
+            <tbody class="hackerFont">
+              {{#each teams}}
+              <tr
+                data-id="{{_id}}"
+                data-team-id="{{teamId}}"
+                data-name="{{name}}"
+                data-score="{{score}}"
+                data-status="{{status}}"
+              >
+                <td>{{inc @index}}</td>
+                <td>{{teamId}}</td>
+                <td>{{name}}</td>
+                <td>{{members.length}}</td>
+                <td>{{score}}</td>
+                <td>
+                  <span class="badge {{#if (eq status 'active')}}badge-success{{else}}badge-warning{{/if}}">
+                    {{status}}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary mr-1 editBtn">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger deleteBtn">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+              {{else}}
+              <tr>
+                <td colspan="7" class="text-center text-muted">No teams found.</td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
 
         <button class="btn btn-outline-danger btn-shadow px-3 my-3" data-toggle="modal" data-target="#addTeamModal">
           <i class="fas fa-plus mr-2"></i>Add New Team
@@ -70,41 +85,26 @@
   </div>
 </div>
 
-<!-- 🟢 Add Team Modal -->
 <div class="modal fade" id="addTeamModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content bg-dark text-light border border-danger">
       <div class="modal-header border-danger">
         <h5 class="modal-title color_danger bold">➕ Add New Team</h5>
-        <button type="button" class="close text-light" data-dismiss="modal"><span>&times;</span></button>
+        <button type="button" class="close text-light" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
       </div>
+
       <div class="modal-body hackerFont">
         <form id="addTeamForm">
           <div class="form-group">
-            <label>Team ID</label>
-            <input type="text" class="form-control bg-transparent text-light" id="addTeamID" placeholder="e.g., T001" required>
-          </div>
-          <div class="form-group">
             <label>Team Name</label>
             <input type="text" class="form-control bg-transparent text-light" id="addTeamName" required>
-          </div>
-          <div class="form-group">
-            <label>Members</label>
-            <input type="number" class="form-control bg-transparent text-light" id="addMembers" required>
-          </div>
-          <div class="form-group">
-            <label>Score</label>
-            <input type="number" class="form-control bg-transparent text-light" id="addScore" value="0">
-          </div>
-          <div class="form-group">
-            <label>Status</label>
-            <select class="form-control bg-transparent text-light" id="addStatus">
-              <option>Active</option>
-              <option>Pending</option>
-            </select>
+            <small class="form-text text-muted">Team ID sẽ được hệ thống tự tạo.</small>
           </div>
         </form>
       </div>
+
       <div class="modal-footer border-danger">
         <button class="btn btn-outline-light" data-dismiss="modal">Cancel</button>
         <button class="btn btn-outline-danger" id="saveAdd">Add Team</button>
@@ -113,42 +113,45 @@
   </div>
 </div>
 
-<!-- 🟡 Edit Team Modal -->
 <div class="modal fade" id="editTeamModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content bg-dark text-light border border-warning">
       <div class="modal-header border-warning">
         <h5 class="modal-title color_danger bold">✏️ Edit Team</h5>
-        <button type="button" class="close text-light" data-dismiss="modal"><span>&times;</span></button>
+        <button type="button" class="close text-light" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
       </div>
+
       <div class="modal-body hackerFont">
         <form id="editTeamForm">
-          <input type="hidden" id="editRowIndex">
+          <input type="hidden" id="editId">
+
           <div class="form-group">
             <label>Team ID</label>
             <input type="text" class="form-control bg-transparent text-light" id="editTeamID" readonly>
           </div>
+
           <div class="form-group">
             <label>Team Name</label>
             <input type="text" class="form-control bg-transparent text-light" id="editTeamName" required>
           </div>
-          <div class="form-group">
-            <label>Members</label>
-            <input type="number" class="form-control bg-transparent text-light" id="editMembers" required>
-          </div>
+
           <div class="form-group">
             <label>Score</label>
             <input type="number" class="form-control bg-transparent text-light" id="editScore" required>
           </div>
+
           <div class="form-group">
             <label>Status</label>
             <select class="form-control bg-transparent text-light" id="editStatus">
-              <option>Active</option>
-              <option>Pending</option>
+              <option value="active">active</option>
+              <option value="pending">pending</option>
             </select>
           </div>
         </form>
       </div>
+
       <div class="modal-footer border-warning">
         <button class="btn btn-outline-light" data-dismiss="modal">Cancel</button>
         <button class="btn btn-outline-warning" id="saveEdit">Save Changes</button>
@@ -157,17 +160,20 @@
   </div>
 </div>
 
-<!-- 🔴 Delete Confirmation Modal -->
 <div class="modal fade" id="deleteTeamModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content bg-dark text-light border border-danger">
       <div class="modal-header border-danger">
         <h5 class="modal-title color_danger bold">⚠️ Confirm Deletion</h5>
-        <button type="button" class="close text-light" data-dismiss="modal"><span>&times;</span></button>
+        <button type="button" class="close text-light" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
       </div>
+
       <div class="modal-body hackerFont">
         Are you sure you want to delete this team? This action cannot be undone.
       </div>
+
       <div class="modal-footer border-danger">
         <button class="btn btn-outline-light" data-dismiss="modal">Cancel</button>
         <button class="btn btn-outline-danger" id="confirmDelete">Delete</button>
@@ -176,7 +182,6 @@
   </div>
 </div>
 
-<!-- 🔔 Toast Notification -->
 <div aria-live="polite" aria-atomic="true" style="position: fixed; top: 1rem; right: 1rem; z-index: 9999;">
   <div id="toastMsg" class="toast bg-dark text-light border border-danger" data-delay="3000">
     <div class="toast-header bg-danger text-white">
@@ -187,14 +192,11 @@
   </div>
 </div>
 
-<!-- JS -->
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script> <!-- ✅ Full jQuery -->
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
-<!-- Toast & Logic -->
 <script>
-  // ✅ Global Toast Function
   function showToast(type, message) {
     const toast = $("#toastMsg");
     const title = $("#toastTitle");
@@ -211,7 +213,7 @@
       $(".toast-header").addClass("bg-danger text-white");
       toast.addClass("border-danger");
       title.text("❌ Error");
-    } else if (type === "warning") {
+    } else {
       $(".toast-header").addClass("bg-warning text-dark");
       toast.addClass("border-warning");
       title.text("⚠️ Warning");
@@ -222,89 +224,84 @@
     toast.toast("show");
   }
 
-  // 🔧 CRUD Logic
-  const table = document.getElementById("teamTable").getElementsByTagName("tbody")[0];
   let deleteRow = null;
   let deleteId = null;
 
-  // 🟢 ADD TEAM
   $("#saveAdd").on("click", async function () {
-    const teamId = $("#addTeamID").val().trim();
     const name = $("#addTeamName").val().trim();
-    const members = parseInt($("#addMembers").val()) || 0;
-    const score = parseInt($("#addScore").val()) || 0;
-    const status = $("#addStatus").val();
 
-    if (!teamId || !name) return showToast("warning", "Please fill in Team ID and Team Name.");
+    if (!name) {
+      return showToast("warning", "Please fill in Team Name.");
+    }
 
     try {
       const res = await fetch("/team", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ teamId, name, score, status })
+        body: JSON.stringify({ name })
       });
+
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.message || "Failed to add team.");
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to add team.");
+      }
 
       showToast("success", data.message || "Team created successfully!");
-      setTimeout(() => window.location.reload(), 2000);
+      setTimeout(() => window.location.reload(), 1000);
     } catch (err) {
-      console.error("Add Team Error:", err);
       showToast("error", err.message);
-    } finally {
-      $("#addTeamModal").modal("hide");
-      $("#addTeamForm")[0].reset();
     }
   });
 
-  // 🟡 EDIT TEAM
   $(document).on("click", ".editBtn", function () {
-    const row = $(this).closest("tr")[0];
-    const id = row.getAttribute("data-id");
-    $("#editRowIndex").val(id);
-    $("#editTeamID").val(row.cells[0].innerText);
-    $("#editTeamName").val(row.cells[1].innerText);
-    $("#editMembers").val(row.cells[2].innerText);
-    $("#editScore").val(row.cells[3].innerText);
-    $("#editStatus").val(row.cells[4].innerText.trim());
+    const row = $(this).closest("tr");
+
+    $("#editId").val(row.attr("data-id"));
+    $("#editTeamID").val(row.attr("data-team-id"));
+    $("#editTeamName").val(row.attr("data-name"));
+    $("#editScore").val(row.attr("data-score"));
+    $("#editStatus").val(row.attr("data-status"));
+
     $("#editTeamModal").modal("show");
   });
 
   $("#saveEdit").on("click", async function () {
-    const id = $("#editRowIndex").val();
-    const teamId = $("#editTeamID").val().trim();
-    const name = $("#editTeamName").val().trim();
-    const score = parseInt($("#editScore").val()) || 0;
-    const status = $("#editStatus").val();
+    const id = $("#editId").val();
 
-    if (!name) return showToast("warning", "Please fill in all required fields.");
+    const payload = {
+      name: $("#editTeamName").val().trim(),
+      score: parseInt($("#editScore").val()) || 0,
+      status: $("#editStatus").val(),
+    };
+
+    if (!payload.name) {
+      return showToast("warning", "Please fill in Team Name.");
+    }
 
     try {
       const res = await fetch(`/team/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ teamId, name, score, status })
+        body: JSON.stringify(payload)
       });
+
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.message || "Failed to update team.");
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to update team.");
+      }
 
       showToast("success", data.message || "Team updated successfully!");
-      setTimeout(() => window.location.reload(), 2000);
+      setTimeout(() => window.location.reload(), 1000);
     } catch (err) {
-      console.error("Edit Team Error:", err);
       showToast("error", err.message);
-    } finally {
-      $("#editTeamModal").modal("hide");
     }
   });
 
-  // 🔴 DELETE TEAM
   $(document).on("click", ".deleteBtn", function () {
-    const row = $(this).closest("tr")[0];
-    deleteRow = row;
-    deleteId = row.getAttribute("data-id");
+    deleteRow = $(this).closest("tr");
+    deleteId = deleteRow.attr("data-id");
     $("#deleteTeamModal").modal("show");
   });
 
@@ -312,15 +309,19 @@
     if (!deleteId) return;
 
     try {
-      const res = await fetch(`/team/${deleteId}`, { method: "DELETE" });
+      const res = await fetch(`/team/${deleteId}`, {
+        method: "DELETE"
+      });
+
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.message || "Failed to delete team.");
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to delete team.");
+      }
 
       deleteRow.remove();
       showToast("success", data.message || "Team deleted successfully!");
     } catch (err) {
-      console.error("Delete Team Error:", err);
       showToast("error", err.message);
     } finally {
       deleteRow = null;

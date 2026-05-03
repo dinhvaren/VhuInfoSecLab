@@ -55,6 +55,8 @@
         data-diff="{{difficulty}}"
         data-desc="{{description}}"
         data-attachments='{{json attachments}}'
+        data-solved="{{solved}}"
+        data-submitted-flag="{{submittedFlag}}"
       >
         <div class="card bg-transparent border border-light h-100">
           <div class="card-body d-flex flex-column">
@@ -69,7 +71,12 @@
             <p class="text-grey flex-grow-1">{{description}}</p>
 
             <div class="d-flex justify-content-between align-items-center">
-              <span class="badge badge-dark status-badge">Unsolved</span>
+              {{#if solved}}
+                <span class="badge badge-success status-badge">Solved</span>
+              {{else}}
+                <span class="badge badge-dark status-badge">Unsolved</span>
+              {{/if}}
+
               <button class="btn btn-outline-danger btn-sm openChallenge">Details</button>
             </div>
           </div>
@@ -175,8 +182,8 @@
     const q = ($("#searchInput").val() || "").toLowerCase();
 
     $(".challenge-card").each(function () {
-      const name = String($(this).data("name")).toLowerCase();
-      const c = $(this).data("cat");
+      const name = String($(this).attr("data-name")).toLowerCase();
+      const c = $(this).attr("data-cat");
 
       const matchCat = cat === "all" || c === cat;
       const matchText = !q || name.includes(q);
@@ -188,13 +195,25 @@
   $(".openChallenge").on("click", function () {
     const card = $(this).closest(".challenge-card");
 
-    $("#challengeId").val(card.data("id"));
-    $("#modalTitle").text(card.data("name"));
-    $("#modalCategory").text(card.data("cat"));
-    $("#modalPoints").text(card.data("points") + " pts");
-    $("#modalDiff").text(card.data("diff"));
-    $("#modalDesc").text(card.data("desc"));
-    $("#flagInput").val("");
+    $("#challengeId").val(card.attr("data-id"));
+    $("#modalTitle").text(card.attr("data-name"));
+    $("#modalCategory").text(card.attr("data-cat"));
+    $("#modalPoints").text(card.attr("data-points") + " pts");
+    $("#modalDiff").text(card.attr("data-diff"));
+    $("#modalDesc").text(card.attr("data-desc"));
+
+    const solved = String(card.attr("data-solved")) === "true";
+    const submittedFlag = card.attr("data-submitted-flag") || "";
+
+    if (solved) {
+      $("#flagInput").val(submittedFlag).prop("disabled", true);
+      $("#submitFlag").prop("disabled", true).text("Already solved");
+      $("#modalStatus").removeClass("badge-dark").addClass("badge-success").text("Solved");
+    } else {
+      $("#flagInput").val("").prop("disabled", false);
+      $("#submitFlag").prop("disabled", false).text("Submit");
+      $("#modalStatus").removeClass("badge-success").addClass("badge-dark").text("Unsolved");
+    }
 
     let attachments = card.attr("data-attachments");
 
@@ -227,35 +246,55 @@
     $("#challengeModal").modal("show");
   });
 
-$("#submitFlag").on("click", async function () {
-  const challengeId = $("#challengeId").val();
-  const flag = $("#flagInput").val().trim();
+  $("#submitFlag").on("click", async function () {
+    const btn = $(this);
+    const challengeId = $("#challengeId").val();
+    const flag = $("#flagInput").val().trim();
 
-  if (!flag) {
-    return showToast("warning", "Vui lòng nhập flag!");
-  }
-
-  try {
-    const res = await fetch("/submissions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ challengeId, flag }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.message || "Submit failed");
+    if (!flag) {
+      return showToast("warning", "Vui lòng nhập flag!");
     }
 
-    if (data.isCorrect) {
-      showToast("success", data.message || "Correct flag!");
-      $("#challengeModal").modal("hide");
-    } else {
+    btn.prop("disabled", true).text("Submitting...");
+
+    try {
+      const res = await fetch("/submissions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ challengeId, flag }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok && !data.alreadySolved) {
+        throw new Error(data.message || "Submit failed");
+      }
+
+      if (data.isCorrect || data.alreadySolved) {
+        const submittedFlag = data.submittedFlag || flag;
+        const card = $(`.challenge-card[data-id="${challengeId}"]`);
+
+        card
+          .attr("data-solved", "true")
+          .attr("data-submitted-flag", submittedFlag);
+
+        card.find(".status-badge")
+          .removeClass("badge-dark")
+          .addClass("badge-success")
+          .text("Solved");
+
+        $("#flagInput").val(submittedFlag).prop("disabled", true);
+        $("#submitFlag").prop("disabled", true).text("Already solved");
+        $("#modalStatus").removeClass("badge-dark").addClass("badge-success").text("Solved");
+
+        return showToast("success", data.message || "Correct flag!");
+      }
+
       showToast("error", data.message || "Wrong flag!");
+      btn.prop("disabled", false).text("Submit");
+    } catch (err) {
+      showToast("error", err.message);
+      btn.prop("disabled", false).text("Submit");
     }
-  } catch (err) {
-    showToast("error", err.message);
-  }
-});
+  });
 </script>

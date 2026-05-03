@@ -1,7 +1,53 @@
 const { Submission, User, Team, Challenge } = require("../models/index");
 
+async function recalcUserScore(user) {
+  const challenges = await Challenge.find({
+    _id: { $in: user.solved || [] },
+  })
+    .select("points")
+    .lean();
+
+  const totalScore = challenges.reduce((sum, challenge) => {
+    return sum + Number(challenge.points || 0);
+  }, 0);
+
+  user.score = totalScore;
+  await user.save();
+
+  return totalScore;
+}
+
+async function recalcTeamScore(teamId) {
+  if (!teamId) return 0;
+
+  const members = await User.find({ team: teamId }).select("solved").lean();
+
+  const solvedSet = new Set();
+
+  members.forEach((member) => {
+    (member.solved || []).forEach((challengeId) => {
+      solvedSet.add(challengeId.toString());
+    });
+  });
+
+  const challenges = await Challenge.find({
+    _id: { $in: Array.from(solvedSet) },
+  })
+    .select("points")
+    .lean();
+
+  const totalScore = challenges.reduce((sum, challenge) => {
+    return sum + Number(challenge.points || 0);
+  }, 0);
+
+  await Team.findByIdAndUpdate(teamId, {
+    $set: { score: totalScore },
+  });
+
+  return totalScore;
+}
+
 class SubmissionController {
-  // [GET] /submissions
   async getAll(req, res) {
     try {
       const submissions = await Submission.find()
@@ -24,10 +70,10 @@ class SubmissionController {
     }
   }
 
-  // [GET] /submissions/:id
   async getById(req, res) {
     try {
       const { id } = req.params;
+
       const submission = await Submission.findById(id)
         .populate("user", "username email")
         .populate("team", "name")
@@ -47,14 +93,18 @@ class SubmissionController {
     }
   }
 
-  // [DELETE] /submissions/:id
   async delete(req, res) {
     try {
       const { id } = req.params;
+
       const deleted = await Submission.findByIdAndDelete(id);
 
       if (!deleted) {
         return res.status(404).json({ message: "Submission not found." });
+      }
+
+      if (deleted.team) {
+        await recalcTeamScore(deleted.team);
       }
 
       res.status(200).json({ message: "Submission deleted successfully." });
@@ -66,7 +116,6 @@ class SubmissionController {
     }
   }
 
-  // [POST] /submissions
   async submitFlag(req, res) {
     try {
       const userId = req.user?.id || req.session?.user?.id;
@@ -82,7 +131,7 @@ class SubmissionController {
         return res.status(400).json({ message: "Missing required fields." });
       }
 
-      const user = await User.findById(userId).populate("team");
+      const user = await User.findById(userId);
       const challenge = await Challenge.findById(challengeId);
 
       if (!user || !challenge) {
@@ -91,40 +140,83 @@ class SubmissionController {
           .json({ message: "User or challenge not found." });
       }
 
+      const teamId = user.team || null;
+
+      const solvedSubmission = await Submission.findOne({
+        user: user._id,
+        challenge: challenge._id,
+        isCorrect: true,
+      }).lean();
+
+      if (solvedSubmission) {
+        return res.status(200).json({
+          message: "Challenge already solved.",
+          isCorrect: true,
+          alreadySolved: true,
+          submittedFlag: solvedSubmission.flag,
+        });
+      }
+
       const isCorrect = challenge.flag === flag;
 
       await Submission.create({
         user: user._id,
-        team: user.team?._id || null,
+        team: teamId,
         challenge: challenge._id,
         flag,
         isCorrect,
         ipAddress: ip || req.ip,
       });
 
-      if (isCorrect) {
-        const alreadySolved = user.solved.some(
-          (id) => id.toString() === challenge._id.toString(),
+      if (!isCorrect) {
+        return res.status(201).json({
+          message: "Wrong flag!",
+          isCorrect: false,
+          alreadySolved: false,
+        });
+      }
+
+      user.solved = user.solved || [];
+
+      const alreadyInSolved = user.solved.some(
+        (id) => id.toString() === challenge._id.toString(),
+      );
+
+      if (!alreadyInSolved) {
+        user.solved.push(challenge._id);
+      }
+
+      const userScore = await recalcUserScore(user);
+
+      let teamScore = 0;
+
+      if (teamId) {
+        await Team.findByIdAndUpdate(teamId, {
+          $addToSet: { members: user._id },
+        });
+
+        await Submission.updateMany(
+          {
+            user: user._id,
+            isCorrect: true,
+            team: null,
+          },
+          {
+            $set: { team: teamId },
+          },
         );
 
-        if (!alreadySolved) {
-          user.solved.push(challenge._id);
-          user.score += challenge.points;
-          await user.save();
-
-          if (user.team) {
-            const team = await Team.findById(user.team._id);
-            if (team) {
-              team.score += challenge.points;
-              await team.save();
-            }
-          }
-        }
+        teamScore = await recalcTeamScore(teamId);
       }
 
       return res.status(201).json({
-        message: isCorrect ? "Correct flag!" : "Wrong flag!",
-        isCorrect,
+        message: "Correct flag!",
+        isCorrect: true,
+        alreadySolved: false,
+        submittedFlag: flag,
+        points: Number(challenge.points || 0),
+        userScore,
+        teamScore,
       });
     } catch (err) {
       console.error("Submit Flag Error:", err);
@@ -134,7 +226,6 @@ class SubmissionController {
     }
   }
 
-  // [GET] /submissions/user/:userId
   async getByUser(req, res) {
     try {
       const { userId } = req.params;
@@ -153,7 +244,6 @@ class SubmissionController {
     }
   }
 
-  // [GET] /submissions/team/:teamId
   async getByTeam(req, res) {
     try {
       const { teamId } = req.params;
