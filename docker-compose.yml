@@ -1,12 +1,10 @@
-version: "3.9"
-
 services:
   app:
     build: .
     container_name: vhuinfoseclab_app
     restart: always
     ports:
-      - "3000:3000"
+      - "3002:3000"
     env_file:
       - .env
     depends_on:
@@ -20,8 +18,6 @@ services:
     restart: always
     volumes:
       - mongo_data:/data/db
-    ports:
-      - "27017:27017"
     networks:
       - vhuinfoseclab_net
 
