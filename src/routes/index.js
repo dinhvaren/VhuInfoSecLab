@@ -4,6 +4,7 @@ const adminRouter = require("./admin");
 const userRouter = require("./user");
 const teamRouter = require("./team");
 const submissionsRouter = require("./submissions");
+const challengeRouter = require("./challenge");
 
 function route(app) {
   app.use("/", homeRouter);
@@ -12,6 +13,7 @@ function route(app) {
   app.use("/admin", adminRouter);
   app.use("/team", teamRouter);
   app.use("/submissions", submissionsRouter);
+  app.use("/challenges", challengeRouter);
 }
 
 module.exports = route;

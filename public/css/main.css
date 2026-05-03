@@ -866,9 +866,29 @@ canvas#myChart {
   box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
 }
 
-.navbar-nav a.active-link {
-  color: #ff00ff !important;
-  background: rgba(255, 0, 255, 0.2) !important;
-  border-radius: 6px;
-  text-shadow: 0 0 10px #ff00ff !important;
+.modal .form-control,
+.modal select.form-control,
+.modal textarea.form-control,
+.modal input.form-control {
+  background-color: #303149 !important;
+  color: #e0ffff !important;
+  border: 1.5px solid rgba(0, 255, 255, 0.55) !important;
+  box-shadow: 0 0 5px rgba(0, 255, 255, 0.3) !important;
+}
+
+.modal .form-control:focus,
+.modal select.form-control:focus,
+.modal textarea.form-control:focus,
+.modal input.form-control:focus {
+  background-color: #303149 !important;
+  color: #ffffff !important;
+  border-color: #00ffff !important;
+  box-shadow:
+    0 0 10px #00ffff,
+    0 0 20px rgba(0, 255, 255, 0.5) !important;
+}
+
+.modal select.form-control option {
+  background-color: #303149 !important;
+  color: #e0ffff !important;
 }

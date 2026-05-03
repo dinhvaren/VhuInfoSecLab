@@ -2,18 +2,15 @@
   <div class="glitch__img"></div>
 </div>
 
-  <!-- Navbar -->
-  <div class="navbar-dark text-white">
-    <div class="container">
-      {{> navbar-admin}}
-    </div>
+<div class="navbar-dark text-white">
+  <div class="container">
+    {{> navbar-admin}}
   </div>
+</div>
 
-<!-- Main -->
 <div class="jumbotron bg-transparent mb-0 pt-3 radius-0">
   <div class="container">
     <div class="row">
-      <!-- Sidebar -->
       <div class="col-md-3">
         <h4 class="bold color_white mb-4">Admin Panel</h4>
         <div class="list-group">
@@ -26,7 +23,6 @@
         </div>
       </div>
 
-      <!-- Main Content -->
       <div class="col-md-9">
         <h2 class="bold color_white mb-4">Manage Challenges</h2>
 
@@ -39,12 +35,22 @@
               <th>Points</th>
               <th>Difficulty</th>
               <th>Status</th>
+              <th>Attachments</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody class="hackerFont">
             {{#each challenges}}
-            <tr data-id="{{_id}}">
+            <tr
+              data-id="{{_id}}"
+              data-title="{{title}}"
+              data-category="{{category}}"
+              data-points="{{points}}"
+              data-difficulty="{{difficulty}}"
+              data-status="{{status}}"
+              data-description="{{description}}"
+              data-attachments='{{json attachments}}'
+            >
               <td>{{@index}}</td>
               <td>{{title}}</td>
               <td>{{category}}</td>
@@ -56,8 +62,19 @@
                 </span>
               </td>
               <td>
-                <button class="btn btn-sm btn-outline-primary mr-1 editBtn"><i class="fas fa-edit"></i></button>
-                <button class="btn btn-sm btn-outline-danger deleteBtn"><i class="fas fa-trash"></i></button>
+                {{#if attachments.length}}
+                  <span class="badge badge-info">{{attachments.length}} file/link</span>
+                {{else}}
+                  <span class="text-muted">None</span>
+                {{/if}}
+              </td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary mr-1 editBtn">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger deleteBtn">
+                  <i class="fas fa-trash"></i>
+                </button>
               </td>
             </tr>
             {{/each}}
@@ -72,7 +89,6 @@
   </div>
 </div>
 
-<!-- 🟢 Add Challenge Modal -->
 <div class="modal fade" id="addChallengeModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content bg-dark text-light border border-danger">
@@ -80,6 +96,7 @@
         <h5 class="modal-title color_danger bold">➕ Add New Challenge</h5>
         <button type="button" class="close text-light" data-dismiss="modal"><span>&times;</span></button>
       </div>
+
       <div class="modal-body hackerFont">
         <form id="addChallengeForm">
           <div class="form-row">
@@ -87,6 +104,7 @@
               <label>Title</label>
               <input type="text" class="form-control bg-transparent text-light" id="addTitle" required>
             </div>
+
             <div class="form-group col-md-3">
               <label>Category</label>
               <select class="form-control bg-transparent text-light" id="addCategory">
@@ -97,6 +115,7 @@
                 <option>Misc</option>
               </select>
             </div>
+
             <div class="form-group col-md-3">
               <label>Points</label>
               <input type="number" class="form-control bg-transparent text-light" id="addPoints" value="100" required>
@@ -112,6 +131,7 @@
                 <option>Hard</option>
               </select>
             </div>
+
             <div class="form-group col-md-6">
               <label>Status</label>
               <select class="form-control bg-transparent text-light" id="addStatus">
@@ -123,7 +143,17 @@
 
           <div class="form-group">
             <label>Description</label>
-            <textarea class="form-control bg-transparent text-light" id="addDescription" rows="3"></textarea>
+            <textarea class="form-control bg-transparent text-light" id="addDescription" rows="3" required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Attachments mỗi dòng 1 link</label>
+            <textarea
+              class="form-control bg-transparent text-light"
+              id="addAttachments"
+              rows="3"
+              placeholder="https://example.com/file.zip&#10;https://example.com/readme.txt"
+            ></textarea>
           </div>
 
           <div class="form-group">
@@ -132,6 +162,7 @@
           </div>
         </form>
       </div>
+
       <div class="modal-footer border-danger">
         <button class="btn btn-outline-light" data-dismiss="modal">Cancel</button>
         <button class="btn btn-outline-danger" id="saveAdd">Add Challenge</button>
@@ -140,7 +171,6 @@
   </div>
 </div>
 
-<!-- 🟡 Edit Challenge Modal -->
 <div class="modal fade" id="editChallengeModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content bg-dark text-light border border-warning">
@@ -148,14 +178,17 @@
         <h5 class="modal-title color_danger bold">✏️ Edit Challenge</h5>
         <button type="button" class="close text-light" data-dismiss="modal"><span>&times;</span></button>
       </div>
+
       <div class="modal-body hackerFont">
         <form id="editChallengeForm">
           <input type="hidden" id="editId">
+
           <div class="form-row">
             <div class="form-group col-md-6">
               <label>Title</label>
               <input type="text" class="form-control bg-transparent text-light" id="editTitle" required>
             </div>
+
             <div class="form-group col-md-3">
               <label>Category</label>
               <select class="form-control bg-transparent text-light" id="editCategory">
@@ -166,6 +199,7 @@
                 <option>Misc</option>
               </select>
             </div>
+
             <div class="form-group col-md-3">
               <label>Points</label>
               <input type="number" class="form-control bg-transparent text-light" id="editPoints" required>
@@ -181,6 +215,7 @@
                 <option>Hard</option>
               </select>
             </div>
+
             <div class="form-group col-md-6">
               <label>Status</label>
               <select class="form-control bg-transparent text-light" id="editStatus">
@@ -194,8 +229,24 @@
             <label>Description</label>
             <textarea class="form-control bg-transparent text-light" id="editDescription" rows="3"></textarea>
           </div>
+
+          <div class="form-group">
+            <label>Attachments mỗi dòng 1 link</label>
+            <textarea
+              class="form-control bg-transparent text-light"
+              id="editAttachments"
+              rows="3"
+              placeholder="https://example.com/file.zip&#10;https://example.com/readme.txt"
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Flag mới nếu muốn đổi</label>
+            <input type="text" class="form-control bg-transparent text-light" id="editFlag" placeholder="Bỏ trống nếu không đổi flag">
+          </div>
         </form>
       </div>
+
       <div class="modal-footer border-warning">
         <button class="btn btn-outline-light" data-dismiss="modal">Cancel</button>
         <button class="btn btn-outline-warning" id="saveEdit">Save Changes</button>
@@ -204,7 +255,6 @@
   </div>
 </div>
 
-<!-- 🔴 Delete Confirmation Modal -->
 <div class="modal fade" id="deleteChallengeModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content bg-dark text-light border border-danger">
@@ -223,7 +273,6 @@
   </div>
 </div>
 
-<!-- 🔔 Toast -->
 <div aria-live="polite" aria-atomic="true" style="position: fixed; top: 1rem; right: 1rem; z-index: 9999;">
   <div id="toastMsg" class="toast bg-dark text-light border border-danger" data-delay="3000">
     <div class="toast-header bg-danger text-white">
@@ -234,29 +283,48 @@
   </div>
 </div>
 
-<!-- JS -->
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
-<!-- Logic -->
 <script>
+  function parseAttachments(value) {
+    return (value || "")
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+
   function showToast(type, message) {
     const toast = $("#toastMsg");
     const title = $("#toastTitle");
     const body = $("#toastBody");
+
     toast.removeClass("border-danger border-success border-warning");
     $(".toast-header").removeClass("bg-danger bg-success bg-warning text-dark text-white");
-    if (type === "success") { $(".toast-header").addClass("bg-success text-white"); toast.addClass("border-success"); title.text("✅ Success"); }
-    else if (type === "error") { $(".toast-header").addClass("bg-danger text-white"); toast.addClass("border-danger"); title.text("❌ Error"); }
-    else { $(".toast-header").addClass("bg-warning text-dark"); toast.addClass("border-warning"); title.text("⚠️ Warning"); }
-    body.text(message); toast.toast({ delay: 3000 }); toast.toast("show");
+
+    if (type === "success") {
+      $(".toast-header").addClass("bg-success text-white");
+      toast.addClass("border-success");
+      title.text("✅ Success");
+    } else if (type === "error") {
+      $(".toast-header").addClass("bg-danger text-white");
+      toast.addClass("border-danger");
+      title.text("❌ Error");
+    } else {
+      $(".toast-header").addClass("bg-warning text-dark");
+      toast.addClass("border-warning");
+      title.text("⚠️ Warning");
+    }
+
+    body.text(message);
+    toast.toast({ delay: 3000 });
+    toast.toast("show");
   }
 
-  const table = document.getElementById("challengeTable").getElementsByTagName("tbody")[0];
-  let deleteRow = null, deleteId = null;
+  let deleteRow = null;
+  let deleteId = null;
 
-  // 🟢 Add Challenge
   $("#saveAdd").on("click", async function () {
     const payload = {
       title: $("#addTitle").val().trim(),
@@ -264,75 +332,117 @@
       points: parseInt($("#addPoints").val()) || 0,
       difficulty: $("#addDifficulty").val(),
       status: $("#addStatus").val(),
-      description: $("#addDescription").val(),
+      description: $("#addDescription").val().trim(),
+      attachments: parseAttachments($("#addAttachments").val()),
       flag: $("#addFlag").val().trim(),
     };
-    if (!payload.title || !payload.flag) return showToast("warning", "Please fill in all required fields.");
+
+    if (!payload.title || !payload.description || !payload.flag) {
+      return showToast("warning", "Please fill in title, description and flag.");
+    }
+
     try {
-      const res = await fetch("/challenge", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+      const res = await fetch("/challenges", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
+
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
+      if (!res.ok) throw new Error(data.message || "Create failed");
+
       showToast("success", data.message || "Challenge added!");
-      setTimeout(() => window.location.reload(), 2000);
-    } catch (err) { showToast("error", err.message); }
-    finally { $("#addChallengeModal").modal("hide"); $("#addChallengeForm")[0].reset(); }
+      setTimeout(() => window.location.reload(), 1000);
+    } catch (err) {
+      showToast("error", err.message);
+    }
   });
 
-  // 🟡 Edit Challenge
   $(document).on("click", ".editBtn", function () {
-    const row = $(this).closest("tr")[0];
-    $("#editId").val(row.getAttribute("data-id"));
-    $("#editTitle").val(row.cells[1].innerText);
-    $("#editCategory").val(row.cells[2].innerText);
-    $("#editPoints").val(row.cells[3].innerText);
-    $("#editDifficulty").val(row.cells[4].innerText);
-    $("#editStatus").val(row.cells[5].innerText.trim());
+    const row = $(this).closest("tr");
+
+    let attachments = [];
+    try {
+      attachments = JSON.parse(row.attr("data-attachments") || "[]");
+    } catch {
+      attachments = [];
+    }
+
+    $("#editId").val(row.data("id"));
+    $("#editTitle").val(row.attr("data-title"));
+    $("#editCategory").val(row.attr("data-category"));
+    $("#editPoints").val(row.attr("data-points"));
+    $("#editDifficulty").val(row.attr("data-difficulty"));
+    $("#editStatus").val(row.attr("data-status"));
+    $("#editDescription").val(row.attr("data-description"));
+    $("#editAttachments").val(attachments.join("\n"));
+    $("#editFlag").val("");
+
     $("#editChallengeModal").modal("show");
   });
 
   $("#saveEdit").on("click", async function () {
     const id = $("#editId").val();
+
     const payload = {
       title: $("#editTitle").val().trim(),
       category: $("#editCategory").val(),
       points: parseInt($("#editPoints").val()) || 0,
       difficulty: $("#editDifficulty").val(),
       status: $("#editStatus").val(),
-      description: $("#editDescription").val(),
+      description: $("#editDescription").val().trim(),
+      attachments: parseAttachments($("#editAttachments").val()),
     };
-    if (!payload.title) return showToast("warning", "Please fill in all required fields.");
+
+    const newFlag = $("#editFlag").val().trim();
+    if (newFlag) payload.flag = newFlag;
+
+    if (!payload.title || !payload.description) {
+      return showToast("warning", "Please fill in title and description.");
+    }
+
     try {
-      const res = await fetch(`/challenge/${id}`, {
-        method: "PUT", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+      const res = await fetch(`/challenges/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
+
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
+      if (!res.ok) throw new Error(data.message || "Update failed");
+
       showToast("success", data.message || "Challenge updated!");
-      setTimeout(() => window.location.reload(), 2000);
-    } catch (err) { showToast("error", err.message); }
-    finally { $("#editChallengeModal").modal("hide"); }
+      setTimeout(() => window.location.reload(), 1000);
+    } catch (err) {
+      showToast("error", err.message);
+    }
   });
 
-  // 🔴 Delete Challenge
   $(document).on("click", ".deleteBtn", function () {
-    deleteRow = $(this).closest("tr")[0];
-    deleteId = deleteRow.getAttribute("data-id");
+    deleteRow = $(this).closest("tr");
+    deleteId = deleteRow.attr("data-id");
     $("#deleteChallengeModal").modal("show");
   });
 
   $("#confirmDelete").on("click", async function () {
     if (!deleteId) return;
+
     try {
-      const res = await fetch(`/challenge/${deleteId}`, { method: "DELETE" });
+      const res = await fetch(`/challenges/${deleteId}`, {
+        method: "DELETE",
+      });
+
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
+      if (!res.ok) throw new Error(data.message || "Delete failed");
+
       deleteRow.remove();
       showToast("success", data.message || "Challenge deleted!");
-    } catch (err) { showToast("error", err.message); }
-    finally { deleteRow = null; deleteId = null; $("#deleteChallengeModal").modal("hide"); }
+    } catch (err) {
+      showToast("error", err.message);
+    } finally {
+      deleteRow = null;
+      deleteId = null;
+      $("#deleteChallengeModal").modal("hide");
+    }
   });
 </script>

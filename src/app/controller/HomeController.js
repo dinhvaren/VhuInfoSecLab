@@ -61,13 +61,16 @@ class HomeController {
   // [GET] /challenges
   async challenges(req, res) {
     try {
-      const challenges = await Challenge.find().select("title category score");
+      const challenges = await Challenge.find({ status: "Active" })
+        .select("-flag")
+        .sort({ points: 1 })
+        .lean();
 
       res.render("pages/challenges-user", {
         title: "Challenges | VHU InfoSec Lab",
         message: "Select a challenge and start hacking!",
         challenges,
-        currentPath: req.path,
+        currentPath: req.originalUrl.split("?")[0],
       });
     } catch (err) {
       console.error("Challenges Error:", err);
@@ -77,7 +80,6 @@ class HomeController {
       });
     }
   }
-
   // [GET] /feedback
   feedback(req, res) {
     try {

@@ -26,7 +26,7 @@ class AdminController {
 
       res.render("admin/admin", {
         title: "Admin Dashboard | VHU InfoSec Lab",
-        currentPath: req.path,
+        currentPath: req.originalUrl.split("?")[0],
         stats: {
           users: userCount,
           teams: teamCount,
@@ -50,7 +50,7 @@ class AdminController {
       res.render("admin/users", {
         title: "Manage Users | VHU InfoSec Lab",
         users,
-        currentPath: req.path,
+        currentPath: req.originalUrl.split("?")[0],
       });
     } catch (err) {
       console.error("List Users Error:", err);
@@ -65,7 +65,7 @@ class AdminController {
       res.render("admin/teams", {
         title: "Manage Teams | VHU InfoSec Lab",
         teams,
-        currentPath: req.path,
+        currentPath: req.originalUrl.split("?")[0],
       });
     } catch (err) {
       console.error("List Teams Error:", err);
@@ -80,7 +80,7 @@ class AdminController {
       res.render("admin/challenges", {
         title: "Manage Challenges | VHU InfoSec Lab",
         challenges,
-        currentPath: req.path,
+        currentPath: req.originalUrl.split("?")[0],
       });
     } catch (err) {
       console.error("List Challenges Error:", err);
@@ -98,7 +98,7 @@ class AdminController {
       res.render("admin/leaderboard", {
         title: "Leaderboard | VHU InfoSec Lab",
         teams,
-        currentPath: req.path,
+        currentPath: req.originalUrl.split("?")[0],
       });
     } catch (err) {
       console.error("Leaderboard Error:", err);
@@ -127,7 +127,7 @@ class AdminController {
       res.render("admin/submissions", {
         title: "Manage Submissions | VHU InfoSec Lab",
         submissions,
-        currentPath: req.path,
+        currentPath: req.originalUrl.split("?")[0],
       });
     } catch (err) {
       console.error("List Submissions Error:", err);

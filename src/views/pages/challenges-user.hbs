@@ -1,4 +1,3 @@
-<!-- Glitch Background -->
 <div class="glitch">
   <div class="glitch__img"></div>
   <div class="glitch__img"></div>
@@ -7,7 +6,6 @@
   <div class="glitch__img"></div>
 </div>
 
-<!-- Navbar -->
 <div class="navbar-dark text-white" style="position: relative; z-index: 10;">
   <div class="container">
     {{#if (isRole user.role "admin")}}
@@ -18,10 +16,8 @@
   </div>
 </div>
 
-<!-- Content -->
 <div class="jumbotron bg-transparent mb-0 pt-3 radius-0" style="position: relative; z-index: 10;">
   <div class="container">
-    <!-- Title -->
     <div class="row">
       <div class="col-xl-8">
         <h1 class="display-1 bold color_white content__title mb-3">CHALLENGES</h1>
@@ -31,10 +27,9 @@
       </div>
     </div>
 
-    <!-- Filters -->
     <div class="row align-items-center mb-4">
       <div class="col-md-6">
-        <div class="btn-group" role="group" aria-label="Categories">
+        <div class="btn-group" role="group">
           <button class="btn btn-outline-danger filter-btn active" data-cat="all">All</button>
           <button class="btn btn-outline-danger filter-btn" data-cat="Web">Web</button>
           <button class="btn btn-outline-danger filter-btn" data-cat="Crypto">Crypto</button>
@@ -43,74 +38,36 @@
           <button class="btn btn-outline-danger filter-btn" data-cat="Misc">Misc</button>
         </div>
       </div>
+
       <div class="col-md-6 mt-3 mt-md-0">
-        <div class="input-group">
-          <input
-            id="searchInput"
-            type="text"
-            class="form-control bg-transparent text-light"
-            placeholder="Search challenge..."
-          />
-          <div class="input-group-append">
-            <span class="input-group-text bg-transparent text-light border-left-0">
-              <i class="fas fa-search"></i>
-            </span>
-          </div>
-        </div>
+        <input id="searchInput" type="text" class="form-control bg-transparent text-light" placeholder="Search challenge...">
       </div>
     </div>
 
-    <!-- Challenges Grid -->
     <div class="row" id="challengeGrid">
-      <!-- Example Card -->
+      {{#each challenges}}
       <div
         class="col-md-4 mb-4 challenge-card"
-        data-name="SQL Injection"
-        data-cat="Web"
-        data-points="100"
-        data-diff="Easy"
-        data-solved="false"
-        data-flag="FLAG{sql_demo}"
-        data-desc="Tìm cách bypass login qua lỗ hổng SQL Injection cổ điển."
-        data-attachments=""
+        data-id="{{_id}}"
+        data-name="{{title}}"
+        data-cat="{{category}}"
+        data-points="{{points}}"
+        data-diff="{{difficulty}}"
+        data-desc="{{description}}"
+        data-attachments='{{json attachments}}'
       >
         <div class="card bg-transparent border border-light h-100">
           <div class="card-body d-flex flex-column">
-            <h5 class="color_white mb-2">SQL Injection</h5>
-            <div class="mb-2">
-              <span class="badge badge-info">Web</span>
-              <span class="badge badge-light">100 pts</span>
-              <span class="badge badge-secondary">Easy</span>
-            </div>
-            <p class="text-grey flex-grow-1">Bypass xác thực bằng payload phù hợp.</p>
-            <div class="d-flex justify-content-between align-items-center">
-              <span class="badge badge-dark status-badge">Unsolved</span>
-              <button class="btn btn-outline-danger btn-sm openChallenge">Details</button>
-            </div>
-          </div>
-        </div>
-      </div>
+            <h5 class="color_white mb-2">{{title}}</h5>
 
-      <div
-        class="col-md-4 mb-4 challenge-card"
-        data-name="Hidden Message"
-        data-cat="Crypto"
-        data-points="150"
-        data-diff="Medium"
-        data-solved="false"
-        data-flag="vhuCTF{crypto_demo}"
-        data-desc="Thông điệp được mã hóa — hãy khôi phục plaintext để lấy flag."
-        data-attachments=""
-      >
-        <div class="card bg-transparent border border-light h-100">
-          <div class="card-body d-flex flex-column">
-            <h5 class="color_white mb-2">Hidden Message</h5>
             <div class="mb-2">
-              <span class="badge badge-info">Crypto</span>
-              <span class="badge badge-light">150 pts</span>
-              <span class="badge badge-secondary">Medium</span>
+              <span class="badge badge-info">{{category}}</span>
+              <span class="badge badge-light">{{points}} pts</span>
+              <span class="badge badge-secondary">{{difficulty}}</span>
             </div>
-            <p class="text-grey flex-grow-1">Giải mã ciphertext bằng kỹ thuật phù hợp.</p>
+
+            <p class="text-grey flex-grow-1">{{description}}</p>
+
             <div class="d-flex justify-content-between align-items-center">
               <span class="badge badge-dark status-badge">Unsolved</span>
               <button class="btn btn-outline-danger btn-sm openChallenge">Details</button>
@@ -118,47 +75,44 @@
           </div>
         </div>
       </div>
+      {{/each}}
     </div>
   </div>
 </div>
 
-<!-- Challenge Modal -->
-<div class="modal fade" id="challengeModal" tabindex="-1" role="dialog" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+<div class="modal fade" id="challengeModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content bg-dark text-light border border-danger">
       <div class="modal-header border-danger">
         <h5 class="modal-title color_white" id="modalTitle">Challenge</h5>
         <button type="button" class="close text-light" data-dismiss="modal"><span>&times;</span></button>
       </div>
+
       <div class="modal-body hackerFont">
+        <input type="hidden" id="challengeId">
+
         <div class="mb-2">
-          <span class="badge badge-info" id="modalCategory">Category</span>
-          <span class="badge badge-light" id="modalPoints">0 pts</span>
-          <span class="badge badge-secondary" id="modalDiff">Diff</span>
+          <span class="badge badge-info" id="modalCategory"></span>
+          <span class="badge badge-light" id="modalPoints"></span>
+          <span class="badge badge-secondary" id="modalDiff"></span>
           <span class="badge badge-dark" id="modalStatus">Unsolved</span>
         </div>
+
         <p id="modalDesc" class="text-grey mb-3"></p>
 
         <div id="modalAttachments" class="mb-3 d-none">
           <h6 class="color_white mb-2">Attachments</h6>
-          <ul class="mb-0" id="attachmentsList"></ul>
+          <ul id="attachmentsList"></ul>
         </div>
 
-        <hr class="border-light" />
-        <div class="form-group mb-1">
-          <label for="flagInput">Submit Flag</label>
-          <input
-            type="text"
-            id="flagInput"
-            class="form-control bg-transparent text-light"
-            placeholder="vhuCTF{...}"
-          />
-          <small class="form-text text-muted">
-            Demo phía client. Khi triển khai thực tế, gửi flag lên server để chấm.
-          </small>
+        <hr class="border-light">
+
+        <div class="form-group">
+          <label>Submit Flag</label>
+          <input type="text" id="flagInput" class="form-control bg-transparent text-light" placeholder="vhuCTF{...}">
         </div>
-        <input type="hidden" id="expectedFlag" />
       </div>
+
       <div class="modal-footer border-danger">
         <button class="btn btn-outline-light" data-dismiss="modal">Close</button>
         <button class="btn btn-outline-danger" id="submitFlag">Submit</button>
@@ -167,57 +121,47 @@
   </div>
 </div>
 
-<!-- Toast Notification -->
-<div
-  aria-live="polite"
-  aria-atomic="true"
-  style="position: fixed; top: 1rem; right: 1rem; z-index: 9999;"
->
+<div style="position: fixed; top: 1rem; right: 1rem; z-index: 9999;">
   <div id="toastMsg" class="toast bg-dark text-light border border-danger" data-delay="3000">
     <div class="toast-header bg-danger text-white">
       <strong class="mr-auto" id="toastTitle">Notification</strong>
       <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast">&times;</button>
     </div>
-    <div class="toast-body hackerFont" id="toastBody">Message goes here.</div>
+    <div class="toast-body hackerFont" id="toastBody"></div>
   </div>
 </div>
 
-<!-- JS -->
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
 <script>
-  // 🔹 Toast Function
   function showToast(type, message) {
-    const toastTitle = $("#toastTitle");
-    const toastBody = $("#toastBody");
     const toast = $("#toastMsg");
+    const title = $("#toastTitle");
+    const body = $("#toastBody");
 
-    // Reset
     toast.removeClass("border-danger border-success border-warning");
-    $(".toast-header").removeClass("bg-danger bg-success bg-warning");
+    $(".toast-header").removeClass("bg-danger bg-success bg-warning text-dark text-white");
 
-    // Style by type
     if (type === "success") {
-      $(".toast-header").addClass("bg-success");
+      $(".toast-header").addClass("bg-success text-white");
       toast.addClass("border-success");
-      toastTitle.text("✅ Success");
+      title.text("✅ Success");
     } else if (type === "error") {
-      $(".toast-header").addClass("bg-danger");
+      $(".toast-header").addClass("bg-danger text-white");
       toast.addClass("border-danger");
-      toastTitle.text("❌ Error");
+      title.text("❌ Error");
     } else {
       $(".toast-header").addClass("bg-warning text-dark");
       toast.addClass("border-warning");
-      toastTitle.text("⚠️ Notice");
+      title.text("⚠️ Notice");
     }
 
-    toastBody.text(message);
+    body.text(message);
     toast.toast("show");
   }
 
-  // 🔹 Filter Buttons
   $(".filter-btn").on("click", function () {
     $(".filter-btn").removeClass("active");
     $(this).addClass("active");
@@ -230,59 +174,88 @@
     const cat = $(".filter-btn.active").data("cat");
     const q = ($("#searchInput").val() || "").toLowerCase();
 
-    $("#challengeGrid .challenge-card").each(function () {
-      const name = ($(this).data("name") + "").toLowerCase();
+    $(".challenge-card").each(function () {
+      const name = String($(this).data("name")).toLowerCase();
       const c = $(this).data("cat");
+
       const matchCat = cat === "all" || c === cat;
       const matchText = !q || name.includes(q);
+
       $(this).toggle(matchCat && matchText);
     });
   }
 
-  // 🔹 Open Modal
   $(".openChallenge").on("click", function () {
-    const $card = $(this).closest(".challenge-card");
-    $("#modalTitle").text($card.data("name"));
-    $("#modalCategory").text($card.data("cat"));
-    $("#modalPoints").text($card.data("points") + " pts");
-    $("#modalDiff").text($card.data("diff"));
-    $("#modalDesc").text($card.data("desc"));
-    $("#expectedFlag").val($card.data("flag"));
+    const card = $(this).closest(".challenge-card");
 
-    const solved = $card.data("solved") === true || $card.data("solved") === "true";
-    $("#modalStatus")
-      .text(solved ? "Solved" : "Unsolved")
-      .removeClass("badge-dark badge-success")
-      .addClass(solved ? "badge-success" : "badge-dark");
+    $("#challengeId").val(card.data("id"));
+    $("#modalTitle").text(card.data("name"));
+    $("#modalCategory").text(card.data("cat"));
+    $("#modalPoints").text(card.data("points") + " pts");
+    $("#modalDiff").text(card.data("diff"));
+    $("#modalDesc").text(card.data("desc"));
+    $("#flagInput").val("");
+
+    let attachments = card.attr("data-attachments");
+
+    try {
+      attachments = attachments ? JSON.parse(attachments) : [];
+    } catch {
+      attachments = [];
+    }
+
+    const list = $("#attachmentsList");
+    list.empty();
+
+    if (attachments.length > 0) {
+      $("#modalAttachments").removeClass("d-none");
+
+      attachments.forEach((link) => {
+        const name = link.split("/").pop() || link;
+        list.append(`
+          <li>
+            <a href="${link}" target="_blank" class="text-info">
+              📎 ${name}
+            </a>
+          </li>
+        `);
+      });
+    } else {
+      $("#modalAttachments").addClass("d-none");
+    }
 
     $("#challengeModal").modal("show");
   });
 
-  // 🔹 Submit Flag (Client demo)
-  $("#submitFlag").on("click", function () {
-    const userFlag = ($("#flagInput").val() || "").trim();
-    const expected = $("#expectedFlag").val();
+  $("#submitFlag").on("click", async function () {
+    const id = $("#challengeId").val();
+    const flag = $("#flagInput").val().trim();
 
-    if (!userFlag) {
-      showToast("warning", "⚠️ Vui lòng nhập flag!");
-      return;
+    if (!flag) {
+      return showToast("warning", "Vui lòng nhập flag!");
     }
 
-    if (userFlag === expected) {
-      const title = $("#modalTitle").text();
-      const $card = $("#challengeGrid .challenge-card").filter(
-        (_, el) => $(el).data("name") === title
-      );
-      $card.data("solved", "true");
-      $card.find(".status-badge")
-        .removeClass("badge-dark")
-        .addClass("badge-success")
-        .text("Solved");
+    try {
+      const res = await fetch(`/challenges/${id}/check`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ flag }),
+      });
 
-      showToast("success", "🎉 Chính xác! Flag hợp lệ.");
-      $("#challengeModal").modal("hide");
-    } else {
-      showToast("error", "❌ Sai flag rồi! Thử lại nhé.");
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Submit failed");
+      }
+
+      if (data.isCorrect) {
+        showToast("success", data.message || "Correct flag!");
+        $("#challengeModal").modal("hide");
+      } else {
+        showToast("error", data.message || "Wrong flag!");
+      }
+    } catch (err) {
+      showToast("error", err.message);
     }
   });
 </script>

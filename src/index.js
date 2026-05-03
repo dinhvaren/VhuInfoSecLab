@@ -37,8 +37,9 @@ app.engine(
         const cleanLink = String(link).replace(/\/$/, "");
         const cleanPath = String(currentPath).replace(/\/$/, "");
 
-        return cleanLink === cleanPath ? "active-link" : "";
+        return cleanLink === cleanPath ? "text-white active-link" : "";
       },
+      json: (context) => JSON.stringify(context),
     },
 
     partialsDir: [
