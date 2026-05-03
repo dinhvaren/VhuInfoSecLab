@@ -892,3 +892,68 @@ canvas#myChart {
   background-color: #303149 !important;
   color: #e0ffff !important;
 }
+
+.submission-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+#submissionTable {
+  table-layout: fixed;
+  width: 100%;
+}
+
+#submissionTable th,
+#submissionTable td {
+  vertical-align: middle;
+  word-break: break-word;
+  white-space: normal;
+}
+
+#submissionTable th:nth-child(1),
+#submissionTable td:nth-child(1) {
+  width: 45px;
+}
+
+#submissionTable th:nth-child(2),
+#submissionTable td:nth-child(2) {
+  width: 110px;
+}
+
+#submissionTable th:nth-child(3),
+#submissionTable td:nth-child(3) {
+  width: 90px;
+}
+
+#submissionTable th:nth-child(4),
+#submissionTable td:nth-child(4) {
+  width: 180px;
+}
+
+#submissionTable th:nth-child(5),
+#submissionTable td:nth-child(5) {
+  width: 300px;
+  font-size: 0.85rem;
+}
+
+#submissionTable th:nth-child(6),
+#submissionTable td:nth-child(6) {
+  width: 110px;
+}
+
+#submissionTable th:nth-child(7),
+#submissionTable td:nth-child(7) {
+  width: 120px;
+}
+
+#submissionTable th:nth-child(8),
+#submissionTable td:nth-child(8) {
+  width: 180px;
+  font-size: 0.8rem;
+}
+
+#submissionTable th:nth-child(9),
+#submissionTable td:nth-child(9) {
+  width: 90px;
+  text-align: center;
+}

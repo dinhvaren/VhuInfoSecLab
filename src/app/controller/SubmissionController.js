@@ -18,7 +18,9 @@ class SubmissionController {
       });
     } catch (err) {
       console.error("GetAll Submissions Error:", err);
-      res.status(500).json({ message: "Server error while retrieving submissions." });
+      res
+        .status(500)
+        .json({ message: "Server error while retrieving submissions." });
     }
   }
 
@@ -39,7 +41,9 @@ class SubmissionController {
       res.status(200).json({ submission });
     } catch (err) {
       console.error("Get Submission By ID Error:", err);
-      res.status(500).json({ message: "Server error while retrieving submission." });
+      res
+        .status(500)
+        .json({ message: "Server error while retrieving submission." });
     }
   }
 
@@ -56,16 +60,25 @@ class SubmissionController {
       res.status(200).json({ message: "Submission deleted successfully." });
     } catch (err) {
       console.error("Delete Submission Error:", err);
-      res.status(500).json({ message: "Server error while deleting submission." });
+      res
+        .status(500)
+        .json({ message: "Server error while deleting submission." });
     }
   }
 
   // [POST] /submissions
   async submitFlag(req, res) {
     try {
-      const { userId, challengeId, flag, ip } = req.body;
+      const userId = req.user?.id || req.session?.user?.id;
+      const { challengeId, flag, ip } = req.body;
 
-      if (!userId || !challengeId || !flag) {
+      if (!userId) {
+        return res
+          .status(401)
+          .json({ message: "Unauthorized. Please log in." });
+      }
+
+      if (!challengeId || !flag) {
         return res.status(400).json({ message: "Missing required fields." });
       }
 
@@ -73,12 +86,14 @@ class SubmissionController {
       const challenge = await Challenge.findById(challengeId);
 
       if (!user || !challenge) {
-        return res.status(404).json({ message: "User or challenge not found." });
+        return res
+          .status(404)
+          .json({ message: "User or challenge not found." });
       }
 
       const isCorrect = challenge.flag === flag;
 
-      const submission = await Submission.create({
+      await Submission.create({
         user: user._id,
         team: user.team?._id || null,
         challenge: challenge._id,
@@ -88,7 +103,10 @@ class SubmissionController {
       });
 
       if (isCorrect) {
-        const alreadySolved = user.solved.includes(challenge._id);
+        const alreadySolved = user.solved.some(
+          (id) => id.toString() === challenge._id.toString(),
+        );
+
         if (!alreadySolved) {
           user.solved.push(challenge._id);
           user.score += challenge.points;
@@ -96,23 +114,27 @@ class SubmissionController {
 
           if (user.team) {
             const team = await Team.findById(user.team._id);
-            team.score += challenge.points;
-            await team.save();
+            if (team) {
+              team.score += challenge.points;
+              await team.save();
+            }
           }
         }
       }
 
-      res.status(201).json({
-        message: isCorrect ? "✅ Correct flag!" : "❌ Wrong flag!",
+      return res.status(201).json({
+        message: isCorrect ? "Correct flag!" : "Wrong flag!",
         isCorrect,
       });
     } catch (err) {
       console.error("Submit Flag Error:", err);
-      res.status(500).json({ message: "Server error while submitting flag." });
+      return res
+        .status(500)
+        .json({ message: "Server error while submitting flag." });
     }
   }
 
-  // [GET] /submissions/user/:userId 
+  // [GET] /submissions/user/:userId
   async getByUser(req, res) {
     try {
       const { userId } = req.params;
@@ -125,7 +147,9 @@ class SubmissionController {
       res.status(200).json({ submissions });
     } catch (err) {
       console.error("Get Submissions By User Error:", err);
-      res.status(500).json({ message: "Server error while retrieving user's submissions." });
+      res
+        .status(500)
+        .json({ message: "Server error while retrieving user's submissions." });
     }
   }
 
@@ -143,7 +167,9 @@ class SubmissionController {
       res.status(200).json({ submissions });
     } catch (err) {
       console.error("Get Submissions By Team Error:", err);
-      res.status(500).json({ message: "Server error while retrieving team submissions." });
+      res
+        .status(500)
+        .json({ message: "Server error while retrieving team submissions." });
     }
   }
 }

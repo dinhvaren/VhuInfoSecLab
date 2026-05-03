@@ -1,4 +1,4 @@
-const { Challenge, Team, User } = require("../models/index");
+const { Challenge, Team, User, Submission } = require("../models/index");
 class HomeController {
   // [GET] /
   async index(req, res, next) {
@@ -100,25 +100,43 @@ class HomeController {
   //  [GET] /profile
   async profile(req, res) {
     try {
-      // const userId = req.user?._id;
-      // if (!userId) {
-      //   return res.redirect("/auth/login");
-      // }
+      const userId = req.user?.id || req.session?.user?.id;
 
-      // const user = await User.findById(userId)
-      //   .populate("team", "name score")
-      //   .select("-password");
+      if (!userId) {
+        return res.redirect("/auth/login");
+      }
 
-      // const submissions = await Submission.find({ user: userId })
-      //   .populate("challenge", "title category")
-      //   .sort({ createdAt: -1 })
-      //   .limit(10);
+      const user = await User.findById(userId)
+        .populate("team", "name score")
+        .populate("solved", "title category points")
+        .select("-password")
+        .lean();
+
+      if (!user) {
+        return res.redirect("/auth/login");
+      }
+
+      const submissions = await Submission.find({ user: userId })
+        .populate("challenge", "title category points")
+        .sort({ submittedAt: -1 })
+        .limit(10)
+        .lean();
+
+      const rankList = await User.find({ status: "active" })
+        .sort({ score: -1 })
+        .select("_id score")
+        .lean();
+
+      const rankIndex = rankList.findIndex(
+        (item) => item._id.toString() === userId.toString(),
+      );
 
       res.render("pages/profile", {
         title: "Profile | VHU InfoSec Lab",
-        // user,
-        // submissions,
-        currentPath: req.path,
+        profileUser: user,
+        submissions,
+        rank: rankIndex >= 0 ? rankIndex + 1 : "N/A",
+        currentPath: req.originalUrl.split("?")[0],
       });
     } catch (err) {
       console.error("Profile Render Error:", err);

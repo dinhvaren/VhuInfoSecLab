@@ -45,7 +45,7 @@
           <tbody class="hackerFont">
             {{#each users}}
             <tr data-id="{{_id}}">
-              <td>{{@index}}</td>
+              <td>{{inc @index}}</td>
               <td>{{username}}</td>
               <td>{{email}}</td>
               <td>{{#if team}}{{team.name}}{{else}}—{{/if}}</td>

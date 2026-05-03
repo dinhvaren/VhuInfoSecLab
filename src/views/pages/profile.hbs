@@ -41,34 +41,40 @@
     <!-- User Information -->
     <div class="row mb-5">
       <div class="col-md-6">
-        <table class="table table-borderless text-light">
-          <tbody>
-            <tr>
-              <th scope="row" style="width: 150px;">Username</th>
-              <td>d1nhvar3n</td>
-            </tr>
-            <tr>
-              <th>Email</th>
-              <td>d1nhvar3n@example.com</td>
-            </tr>
-            <tr>
-              <th>Team</th>
-              <td>VHU_Elite</td>
-            </tr>
-            <tr>
-              <th>Score</th>
-              <td>2540</td>
-            </tr>
-            <tr>
-              <th>Rank</th>
-              <td>#3</td>
-            </tr>
-            <tr>
-              <th>Last Login</th>
-              <td>2025-10-12 14:23</td>
-            </tr>
-          </tbody>
-        </table>
+       <table class="table table-borderless text-light">
+        <tbody>
+          <tr>
+            <th scope="row" style="width: 150px;">Username</th>
+            <td>{{profileUser.username}}</td>
+          </tr>
+          <tr>
+            <th>Email</th>
+            <td>{{profileUser.email}}</td>
+          </tr>
+          <tr>
+            <th>Team</th>
+            <td>
+              {{#if profileUser.team}}
+                {{profileUser.team.name}}
+              {{else}}
+                Individual
+              {{/if}}
+            </td>
+          </tr>
+          <tr>
+            <th>Score</th>
+            <td>{{profileUser.score}}</td>
+          </tr>
+          <tr>
+            <th>Rank</th>
+            <td>#{{rank}}</td>
+          </tr>
+          <tr>
+            <th>Last Login</th>
+            <td>{{profileUser.lastLogin}}</td>
+          </tr>
+        </tbody>
+      </table>
       </div>
     </div>
 
@@ -87,20 +93,33 @@
             </tr>
           </thead>
           <tbody>
+            {{#each submissions}}
             <tr>
-              <td>1</td>
-              <td>Hidden Message</td>
-              <td>vhuCTF{flag123}</td>
-              <td><span class="badge badge-success">Correct</span></td>
-              <td>2025-10-12 10:25</td>
+              <td>{{inc @index}}</td>
+              <td>
+                {{#if challenge}}
+                  {{challenge.title}}
+                {{else}}
+                  Unknown Challenge
+                {{/if}}
+              </td>
+              <td>{{flag}}</td>
+              <td>
+                {{#if isCorrect}}
+                  <span class="badge badge-success">Correct</span>
+                {{else}}
+                  <span class="badge badge-danger">Wrong</span>
+                {{/if}}
+              </td>
+              <td>{{submittedAt}}</td>
             </tr>
+            {{else}}
             <tr>
-              <td>2</td>
-              <td>SQL Injection</td>
-              <td>vhuCTF{wrongflag}</td>
-              <td><span class="badge badge-danger">Wrong</span></td>
-              <td>2025-10-11 22:41</td>
+              <td colspan="5" class="text-center text-muted">
+                No submissions yet.
+              </td>
             </tr>
+            {{/each}}
           </tbody>
         </table>
       </div>

@@ -227,35 +227,35 @@
     $("#challengeModal").modal("show");
   });
 
-  $("#submitFlag").on("click", async function () {
-    const id = $("#challengeId").val();
-    const flag = $("#flagInput").val().trim();
+$("#submitFlag").on("click", async function () {
+  const challengeId = $("#challengeId").val();
+  const flag = $("#flagInput").val().trim();
 
-    if (!flag) {
-      return showToast("warning", "Vui lòng nhập flag!");
+  if (!flag) {
+    return showToast("warning", "Vui lòng nhập flag!");
+  }
+
+  try {
+    const res = await fetch("/submissions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ challengeId, flag }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Submit failed");
     }
 
-    try {
-      const res = await fetch(`/challenges/${id}/check`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ flag }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Submit failed");
-      }
-
-      if (data.isCorrect) {
-        showToast("success", data.message || "Correct flag!");
-        $("#challengeModal").modal("hide");
-      } else {
-        showToast("error", data.message || "Wrong flag!");
-      }
-    } catch (err) {
-      showToast("error", err.message);
+    if (data.isCorrect) {
+      showToast("success", data.message || "Correct flag!");
+      $("#challengeModal").modal("hide");
+    } else {
+      showToast("error", data.message || "Wrong flag!");
     }
-  });
+  } catch (err) {
+    showToast("error", err.message);
+  }
+});
 </script>

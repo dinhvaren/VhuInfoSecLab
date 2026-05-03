@@ -40,6 +40,7 @@ app.engine(
         return cleanLink === cleanPath ? "text-white active-link" : "";
       },
       json: (context) => JSON.stringify(context),
+      inc: (v) => v + 1,
     },
 
     partialsDir: [
