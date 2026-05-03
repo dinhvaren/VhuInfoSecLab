@@ -957,3 +957,14 @@ canvas#myChart {
   width: 90px;
   text-align: center;
 }
+
+.login-error {
+  color: #ff4d6d;
+  font-size: 14px;
+  margin-bottom: 15px;
+  letter-spacing: 1px;
+  text-shadow: 
+    0 0 5px #ff4d6d,
+    0 0 10px #ff4d6d,
+    0 0 20px rgba(255, 77, 109, 0.5);
+}
