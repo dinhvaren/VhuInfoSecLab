@@ -12,11 +12,19 @@
 </div>
 
 <!-- Navbar -->
-<div class="navbar-dark text-white">
-  <div class="container">
-    {{> navbar-auth}}
-  </div>
-</div>
+        <div class="navbar-dark text-white">
+            <div class="container">
+                {{#if user}}
+                    {{#if (isRole user.role "admin")}}
+                        {{> navbar-admin}}
+                    {{else}}
+                        {{> navbar-auth}}
+                    {{/if}}
+                    {{else}}
+                    {{> navbar}}
+                {{/if}}
+            </div>
+        </div>
 
 <!-- Profile Section -->
 <div class="jumbotron bg-transparent mb-0 pt-3 radius-0">

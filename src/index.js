@@ -7,6 +7,7 @@ const cookieParser = require("cookie-parser");
 const db = require("./config/database");
 const app = express();
 const { engine } = require("express-handlebars");
+const { loadUser } = require("./app/middlewares/auth.middleware");
 
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
@@ -23,9 +24,20 @@ app.engine(
         if (!a || !b) return false;
         return a.replace(/\/$/, "") === b.replace(/\/$/, "");
       },
+      isRole: (role, expectedRole) => {
+        return role === expectedRole;
+      },
       navClass: (link, currentPath) => {
         if (!currentPath) return "text-light";
         return link === currentPath ? "text-white" : "text-light";
+      },
+      activeClass: (link, currentPath) => {
+        if (!currentPath) return "";
+
+        const cleanLink = String(link).replace(/\/$/, "");
+        const cleanPath = String(currentPath).replace(/\/$/, "");
+
+        return cleanLink === cleanPath ? "active-link" : "";
       },
     },
 
@@ -40,7 +52,7 @@ app.engine(
       allowProtoPropertiesByDefault: true,
     },
     defaultLayout: "main",
-  })
+  }),
 );
 
 app.set("view engine", "hbs");
@@ -53,9 +65,11 @@ db.connect();
 
 const isProduction = process.env.NODE_ENV === "production";
 
+app.set("trust proxy", 1);
+
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "your-secret-key",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -64,12 +78,12 @@ app.use(
       sameSite: isProduction ? "none" : "lax",
       maxAge: 24 * 60 * 60 * 1000,
     },
-  })
+  }),
 );
 
-route(app);
+app.use(loadUser);
 
-app.set("trust proxy", 1);
+route(app);
 
 app.listen(port, () => {
   console.log(`Server is running on http://${host}:${port}`);

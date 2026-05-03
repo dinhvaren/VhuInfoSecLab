@@ -1,0 +1,25 @@
+<nav class="navbar px-0 navbar-expand-lg navbar-dark">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAdmin">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarNavAdmin">
+    <div class="navbar-nav">
+      <a href="/admin" class="pl-md-0 p-3 text-decoration-none text-light">
+        <h3 class="bold">
+          <span class="color_danger">VHU </span>
+          <span class="color_white">Admin</span>
+        </h3>
+      </a>
+    </div>
+
+    <div class="navbar-nav ml-auto">
+        <a href="/admin" class="p-3 text-decoration-none bold {{activeClass '/admin' currentPath}}">Dashboard</a>
+        <a href="/admin/users" class="p-3 text-decoration-none bold {{activeClass '/admin/users' currentPath}}">Users</a>
+        <a href="/admin/teams" class="p-3 text-decoration-none bold {{activeClass '/admin/teams' currentPath}}">Teams</a>
+        <a href="/admin/challenges" class="p-3 text-decoration-none bold {{activeClass '/admin/challenges' currentPath}}">Challenges</a>
+        <a href="/admin/submissions" class="p-3 text-decoration-none bold {{activeClass '/admin/submissions' currentPath}}">Submissions</a>
+        <a href="/auth/logout" class="p-3 text-decoration-none text-danger bold">Logout</a>
+    </div>
+  </div>
+</nav>

@@ -9,23 +9,7 @@
   <!-- Navbar -->
   <div class="navbar-dark text-white">
     <div class="container">
-      <nav class="navbar px-0 navbar-expand-lg navbar-dark">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-          <div class="navbar-nav">
-            <a href="/admin" class="pl-md-0 p-3 text-decoration-none text-light">
-              <h3 class="bold"><span class="color_danger">VHU</span><span class="color_white">Admin</span></h3>
-            </a>
-          </div>
-          <div class="navbar-nav ml-auto">
-            <a href="/admin" class="p-3 text-decoration-none text-light bold">Dashboard</a>
-            <a href="/hackerboard" class="p-3 text-decoration-none text-light bold">Hackerboard</a>
-            <a href="/auth/logout" class="p-3 text-decoration-none text-danger bold">Logout</a>
-          </div>
-        </div>
-      </nav>
+      {{> navbar-admin}}
     </div>
   </div>
 

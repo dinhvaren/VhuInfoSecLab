@@ -5,11 +5,19 @@
         <div style="position: fixed;" class="glitch__img"></div>
         <div style="position: fixed;" class="glitch__img"></div>
     </div>
-    <div class="navbar-dark text-white">
-        <div class="container">
-            {{> navbar}}
+        <div class="navbar-dark text-white">
+            <div class="container">
+                {{#if user}}
+                    {{#if (isRole user.role "admin")}}
+                        {{> navbar-admin}}
+                    {{else}}
+                        {{> navbar-auth}}
+                    {{/if}}
+                    {{else}}
+                    {{> navbar}}
+                {{/if}}
+            </div>
         </div>
-    </div>
 
     <div class="jumbotron bg-transparent mb-0 pt-3 radius-0">
         <div class="container">

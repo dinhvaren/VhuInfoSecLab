@@ -129,8 +129,17 @@ body {
 }
 
 .hackerFont {
-  font-family: Hack, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+  font-family:
+    Hack,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif,
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
     "Segoe UI Symbol";
   color: rgba(255, 255, 255, 0.8);
   text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
@@ -138,11 +147,16 @@ body {
 
 .color_danger {
   color: #ff0044 !important;
-  text-shadow: 0 0 6px #ff0044, 0 0 12px #ff0044, 0 0 24px rgba(255, 0, 68, 0.8);
+  text-shadow:
+    0 0 6px #ff0044,
+    0 0 12px #ff0044,
+    0 0 24px rgba(255, 0, 68, 0.8);
 }
 .color_white {
   color: #ffffff !important;
-  text-shadow: 0 0 6px #00ffff, 0 0 14px rgba(0, 255, 255, 0.6),
+  text-shadow:
+    0 0 6px #00ffff,
+    0 0 14px rgba(0, 255, 255, 0.6),
     0 0 30px rgba(0, 255, 255, 0.3);
 }
 
@@ -165,7 +179,9 @@ button.typewriter {
   /* Gives that scrolling effect as the typing happens */
   letter-spacing: 0.15em;
   /* Adjust as needed */
-  animation: expand 1s steps(140, end), blink-caret 0.75s step-end infinite;
+  animation:
+    expand 1s steps(140, end),
+    blink-caret 0.75s step-end infinite;
   animation-delay: 1s;
   animation-fill-mode: forwards;
 }
@@ -180,7 +196,9 @@ button.typewriter {
   /* Gives that scrolling effect as the typing happens */
   letter-spacing: 0.15em;
   /* Adjust as needed */
-  animation: typing 0.5s steps(140, end), blink-caret 0.75s step-end infinite;
+  animation:
+    typing 0.5s steps(140, end),
+    blink-caret 0.75s step-end infinite;
   animation-delay: 1.5s;
   animation-fill-mode: forwards;
 }
@@ -283,14 +301,18 @@ input[type="radio"].toggle:checked + label {
   letter-spacing: 1.5px;
   color: #00ffff !important;
   animation: glitch-anim-text 3s infinite ease-in-out;
-  text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff,
+  text-shadow:
+    0 0 10px #00ffff,
+    0 0 20px #00ffff,
     0 0 40px rgba(0, 255, 255, 0.8);
 }
 
 .content__title2 {
   color: #ff00ff !important;
   animation: glitch-anim-text-2 3.5s infinite ease-in-out;
-  text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff,
+  text-shadow:
+    0 0 10px #ff00ff,
+    0 0 20px #ff00ff,
     0 0 40px rgba(255, 0, 255, 0.8);
 }
 
@@ -299,13 +321,18 @@ input[type="radio"].toggle:checked + label {
 @keyframes glitch-anim-text {
   0%,
   100% {
-    text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff,
+    text-shadow:
+      0 0 10px #00ffff,
+      0 0 20px #00ffff,
       0 0 40px rgba(0, 255, 255, 0.7);
     transform: translate(0);
   }
   20% {
     transform: translate(-2px, 1px);
-    text-shadow: -2px 0 #00ffff, 2px 0 #00ffff, 0 0 25px #00ffff;
+    text-shadow:
+      -2px 0 #00ffff,
+      2px 0 #00ffff,
+      0 0 25px #00ffff;
   }
   40% {
     transform: translate(2px, -1px);
@@ -321,13 +348,18 @@ input[type="radio"].toggle:checked + label {
 @keyframes glitch-anim-text-2 {
   0%,
   100% {
-    text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff,
+    text-shadow:
+      0 0 10px #ff00ff,
+      0 0 20px #ff00ff,
       0 0 40px rgba(255, 0, 255, 0.7);
     transform: translate(0);
   }
   25% {
     transform: translate(2px, -2px);
-    text-shadow: 2px 0 #ff00ff, -2px 0 #ff00ff, 0 0 25px #ff00ff;
+    text-shadow:
+      2px 0 #ff00ff,
+      -2px 0 #ff00ff,
+      0 0 25px #ff00ff;
   }
   50% {
     transform: translate(-2px, 2px);
@@ -679,21 +711,29 @@ span.fail:after {
 .navbar-nav a {
   color: rgba(255, 255, 255, 0.85) !important;
   font-weight: 600;
-  text-shadow: 0 0 4px #00ffff, 0 0 8px rgba(0, 255, 255, 0.6),
+  text-shadow:
+    0 0 4px #00ffff,
+    0 0 8px rgba(0, 255, 255, 0.6),
     0 0 15px rgba(0, 255, 255, 0.3);
   transition: all 0.25s ease-in-out;
 }
 
 .navbar-nav a:hover {
   color: #00ffff !important;
-  text-shadow: 0 0 6px #00ffff, 0 0 12px #00ffff, 0 0 25px #00ffff,
+  text-shadow:
+    0 0 6px #00ffff,
+    0 0 12px #00ffff,
+    0 0 25px #00ffff,
     0 0 50px #00ffff;
   transform: scale(1.05);
 }
 
 .navbar-nav .text-white.bold {
   color: #ff00ff !important;
-  text-shadow: 0 0 10px #ff00ff, 0 0 25px #ff00ff, 0 0 40px #ff00ff;
+  text-shadow:
+    0 0 10px #ff00ff,
+    0 0 25px #ff00ff,
+    0 0 40px #ff00ff;
 }
 
 .custom-control-input {
@@ -711,12 +751,16 @@ span.fail:after {
 }
 
 .custom-control-input:hover {
-  box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+  box-shadow:
+    0 0 10px #00ffff,
+    0 0 20px #00ffff;
 }
 
 .custom-control-input:checked {
   background-color: #00ffff;
-  box-shadow: 0 0 15px #00ffff, 0 0 25px #00ffff;
+  box-shadow:
+    0 0 15px #00ffff,
+    0 0 25px #00ffff;
   border-color: #00ffff;
 }
 
@@ -761,7 +805,9 @@ span.fail:after {
   background-color: rgba(0, 0, 0, 0.6);
   border-color: #00ffff;
   color: #ffffff;
-  box-shadow: 0 0 10px #00ffff, 0 0 20px rgba(0, 255, 255, 0.5);
+  box-shadow:
+    0 0 10px #00ffff,
+    0 0 20px rgba(0, 255, 255, 0.5);
 }
 
 .form-text.text-muted {
@@ -818,4 +864,11 @@ canvas#myChart {
   background-color: rgba(0, 0, 0, 0.4);
   border-radius: 10px;
   box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+}
+
+.navbar-nav a.active-link {
+  color: #ff00ff !important;
+  background: rgba(255, 0, 255, 0.2) !important;
+  border-radius: 6px;
+  text-shadow: 0 0 10px #ff00ff !important;
 }

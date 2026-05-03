@@ -88,7 +88,9 @@ class AuthController {
       });
     } catch (err) {
       console.error("RegisterIndividual Error:", err);
-      res.status(500).json({ message: "Server error. Please try again later." });
+      res
+        .status(500)
+        .json({ message: "Server error. Please try again later." });
     }
   }
 
@@ -145,7 +147,9 @@ class AuthController {
       });
     } catch (err) {
       console.error("RegisterTeam Error:", err);
-      res.status(500).json({ message: "Server error. Please try again later." });
+      res
+        .status(500)
+        .json({ message: "Server error. Please try again later." });
     }
   }
 
@@ -155,25 +159,21 @@ class AuthController {
       const { username, password } = req.body;
 
       if (!username || !password) {
-        return res
-          .status(400)
-          .json({ message: "Username and password are required." });
+        return res.redirect("/auth/login");
       }
 
       const user = await User.findOne({ username }).populate("team");
       if (!user) {
-        return res.status(404).json({ message: "User not found." });
+        return res.redirect("/auth/login");
       }
 
       if (user.status === "banned") {
-        return res
-          .status(403)
-          .json({ message: "This account has been banned." });
+        return res.redirect("/auth/login");
       }
 
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        return res.status(401).json({ message: "Invalid credentials." });
+        return res.redirect("/auth/login");
       }
 
       user.lastLogin = Date.now();
@@ -187,28 +187,30 @@ class AuthController {
           team: user.team ? user.team.name : null,
         },
         process.env.JWT_SECRET,
-        { expiresIn: "2h" }
+        { expiresIn: "2h" },
       );
 
       res.cookie("auth_token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        maxAge: 2 * 60 * 60 * 1000, // 2h
+        maxAge: 2 * 60 * 60 * 1000,
       });
 
-      return res.status(200).json({
-        message: "Login successful!",
-        token,
-        user: {
-          id: user._id,
-          username: user.username,
-          role: user.role,
-          team: user.team ? user.team.name : null,
-        },
-      });
+      req.session.user = {
+        id: user._id,
+        username: user.username,
+        role: user.role,
+        team: user.team ? user.team.name : null,
+      };
+
+      if (user.role === "admin") {
+        return res.redirect("/admin");
+      }
+
+      return res.redirect("/");
     } catch (err) {
       console.error("Login Error:", err);
-      res.status(500).json({ message: "Server error. Please try again later." });
+      return res.redirect("/auth/login");
     }
   }
 
