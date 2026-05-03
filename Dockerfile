@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Expose port 3000 cho app
-EXPOSE 3000
+EXPOSE 3002
 
 # Start app
 CMD ["node", "src/index.js"]
