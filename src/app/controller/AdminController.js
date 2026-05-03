@@ -4,13 +4,26 @@ class AdminController {
   // [GET] /admin/dashboard
   async dashboard(req, res) {
     try {
-      const [userCount, teamCount, challengeCount, submissionCount] =
-        await Promise.all([
-          User.countDocuments(),
-          Team.countDocuments(),
-          Challenge.countDocuments(),
-          Submission.countDocuments(),
-        ]);
+      const [
+        userCount,
+        teamCount,
+        challengeCount,
+        submissionCount,
+        flagSolvedAgg,
+      ] = await Promise.all([
+        User.countDocuments(),
+        Team.countDocuments(),
+        Challenge.countDocuments(),
+        Submission.countDocuments(),
+
+        Submission.aggregate([
+          { $match: { isCorrect: true } },
+          { $group: { _id: "$challenge" } },
+          { $count: "total" },
+        ]),
+      ]);
+
+      const flagSolvedCount = flagSolvedAgg[0]?.total || 0;
 
       const recentSubmissions = await Submission.aggregate([
         {
@@ -32,6 +45,7 @@ class AdminController {
           teams: teamCount,
           challenges: challengeCount,
           submissions: submissionCount,
+          flags: flagSolvedCount,
         },
         chartData: JSON.stringify(recentSubmissions),
       });
