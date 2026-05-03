@@ -96,7 +96,6 @@ class AdminController {
   }
 
   // [GET] /admin/leaderboard
-  // [GET] /admin/leaderboard
   async leaderboard(req, res) {
     try {
       const getTeamColor = (index) => {
@@ -177,29 +176,40 @@ class AdminController {
         leaderboard.slice(0, 10).map(async (team) => {
           const submissions = await Submission.find({
             team: team._id,
-            isCorrect: true,
           })
             .sort({ submittedAt: 1 })
             .populate("challenge", "points")
             .lean();
 
           const solvedSet = new Set();
-          let totalScore = 0;
+          let currentScore = 0;
+          let solvedCount = 0;
+
           const points = [{ x: 0, y: 0 }];
 
           for (const submission of submissions) {
             if (!submission.challenge) continue;
 
-            const challengeId = submission.challenge._id.toString();
-            if (solvedSet.has(challengeId)) continue;
+            if (submission.isCorrect) {
+              const challengeId = submission.challenge._id.toString();
 
-            solvedSet.add(challengeId);
-            totalScore += Number(submission.challenge.points || 0);
+              if (solvedSet.has(challengeId)) continue;
+
+              solvedSet.add(challengeId);
+              solvedCount += 1;
+              currentScore += Number(submission.challenge.points || 0);
+            } else {
+              currentScore -= 75;
+            }
 
             points.push({
-              x: solvedSet.size,
-              y: totalScore,
+              x: solvedCount,
+              y: currentScore,
             });
+          }
+
+          if (points.length > 0) {
+            points[points.length - 1].y = Number(team.score || 0);
           }
 
           return {

@@ -169,31 +169,56 @@ class SubmissionController {
       });
 
       if (!isCorrect) {
+        const updatedUser = await User.findByIdAndUpdate(
+          user._id,
+          { $inc: { score: -75 } },
+          { new: true },
+        );
+
+        let teamScore = 0;
+
+        if (teamId) {
+          const updatedTeam = await Team.findByIdAndUpdate(
+            teamId,
+            { $inc: { score: -75 } },
+            { new: true },
+          );
+
+          teamScore = Number(updatedTeam?.score || 0);
+        }
+
         return res.status(201).json({
-          message: "Wrong flag!",
+          message: "Wrong flag! (-75 pts)",
           isCorrect: false,
           alreadySolved: false,
+          penalty: 75,
+          userScore: Number(updatedUser?.score || 0),
+          teamScore,
         });
       }
 
-      user.solved = user.solved || [];
+      const challengePoints = Number(challenge.points || 0);
 
-      const alreadyInSolved = user.solved.some(
-        (id) => id.toString() === challenge._id.toString(),
+      const updatedUser = await User.findByIdAndUpdate(
+        user._id,
+        {
+          $addToSet: { solved: challenge._id },
+          $inc: { score: challengePoints },
+        },
+        { new: true },
       );
-
-      if (!alreadyInSolved) {
-        user.solved.push(challenge._id);
-      }
-
-      const userScore = await recalcUserScore(user);
 
       let teamScore = 0;
 
       if (teamId) {
-        await Team.findByIdAndUpdate(teamId, {
-          $addToSet: { members: user._id },
-        });
+        const updatedTeam = await Team.findByIdAndUpdate(
+          teamId,
+          {
+            $addToSet: { members: user._id },
+            $inc: { score: challengePoints },
+          },
+          { new: true },
+        );
 
         await Submission.updateMany(
           {
@@ -206,7 +231,7 @@ class SubmissionController {
           },
         );
 
-        teamScore = await recalcTeamScore(teamId);
+        teamScore = Number(updatedTeam?.score || 0);
       }
 
       return res.status(201).json({
@@ -214,8 +239,8 @@ class SubmissionController {
         isCorrect: true,
         alreadySolved: false,
         submittedFlag: flag,
-        points: Number(challenge.points || 0),
-        userScore,
+        points: challengePoints,
+        userScore: Number(updatedUser?.score || 0),
         teamScore,
       });
     } catch (err) {
