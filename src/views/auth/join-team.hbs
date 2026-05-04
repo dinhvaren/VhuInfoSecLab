@@ -1,0 +1,69 @@
+<!-- Background glitch -->
+<div class="glitch">
+  <div class="glitch__img"></div>
+  <div class="glitch__img"></div>
+  <div class="glitch__img"></div>
+  <div class="glitch__img"></div>
+  <div class="glitch__img"></div>
+</div>
+
+<!-- Navbar -->
+<div class="navbar-dark text-white">
+  <div class="container">
+    {{> navbar-auth}}
+  </div>
+</div>
+
+<!-- Main -->
+<div class="jumbotron bg-transparent mb-0 pt-3 radius-0">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <h1 class="display-4 bold color_white mb-4">Join Team</h1>
+
+        {{#if message}}
+          <div id="join-message" class="login-error mb-3">
+            {{message}}
+          </div>
+        {{/if}}
+
+        <form action="/auth/join-team" method="POST">
+          <div class="form-group">
+            <input
+              type="text"
+              class="form-control"
+              name="teamId"
+              placeholder="Enter Team Code (e.g., A1B2C3D4)"
+              required
+            />
+            <small class="form-text text-muted">
+              Ask your team leader for the code.
+            </small>
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-outline-danger btn-shadow px-3"
+          >
+            <h5 class="mb-0">Join</h5>
+          </button>
+        </form>
+
+        <small class="form-text text-muted mt-3">
+          Don't have a team?
+          <a href="/auth/register">Create one here</a>
+        </small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  setTimeout(() => {
+    const el = document.getElementById("join-message");
+    if (!el) return;
+    el.style.transition = "opacity 0.5s ease";
+    el.style.opacity = "0";
+    setTimeout(() => el.remove(), 500);
+  }, 3000);
+</script>

@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const { User, Team } = require("../models/index");
+const crypto = require("crypto");
 require("dotenv").config();
 
 const sendResetPasswordEmail = async (toEmail, resetLink) => {
@@ -51,22 +52,7 @@ class AuthController {
     }
   }
 
-  // [GET] /auth/register-individual
-  showRegisterIndividual(req, res) {
-    try {
-      res.render("auth/register-individual", {
-        title: "Register Individual | CTF Platform",
-        message: "Create a personal account to join the competition.",
-      });
-    } catch (err) {
-      console.error("ShowRegisterIndividual Error:", err);
-      res.status(500).render("error/500", {
-        message: "Server error while rendering register page.",
-      });
-    }
-  }
-
-  // [GET] /auth/register (team)
+  // [GET] /auth/register
   showRegister(req, res) {
     try {
       res.render("auth/register", {
@@ -81,14 +67,15 @@ class AuthController {
     }
   }
 
-  // [POST] /auth/register-individual
-  async registerIndividual(req, res) {
+  // [POST] /auth/register
+  async register(req, res) {
     try {
-      const { username, email, password, confirm_password } = req.body;
+      const { teamName, username, email, password, confirm_password } =
+        req.body;
 
       const renderRegister = (message) => {
-        return res.status(400).render("auth/register-individual", {
-          title: "Register Individual | CTF Platform",
+        return res.status(400).render("auth/register", {
+          title: "Register | CTF Platform",
           message,
         });
       };
@@ -101,6 +88,10 @@ class AuthController {
         return renderRegister("Passwords do not match.");
       }
 
+      if (password.length < 6) {
+        return renderRegister("Password must be at least 6 characters long.");
+      }
+
       const existingUser = await User.findOne({
         $or: [{ username }, { email }],
       });
@@ -111,65 +102,63 @@ class AuthController {
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      await User.create({
+      let team = null;
+      let generatedTeamId = null;
+
+      if (teamName && teamName.trim() !== "") {
+        const cleanTeamName = teamName.trim();
+
+        const existingTeam = await Team.findOne({ name: cleanTeamName });
+
+        if (existingTeam) {
+          return renderRegister(
+            "Team name already exists. Leave Team Name empty and use Join Team after login.",
+          );
+        }
+
+        generatedTeamId = crypto.randomBytes(4).toString("hex").toUpperCase();
+
+        team = await Team.create({
+          name: cleanTeamName,
+          teamId: generatedTeamId,
+          members: [],
+        });
+      }
+
+      const newUser = await User.create({
         username,
         email,
         password: hashedPassword,
         role: "user",
         status: "active",
+        team: team ? team._id : undefined,
       });
 
-      return res.render("auth/register-individual", {
-        title: "Register Individual | CTF Platform",
-        message: "Registration successful. You can now login.",
-      });
-    } catch (err) {
-      console.error("RegisterIndividual Error:", err);
-
-      return res.status(500).render("auth/register-individual", {
-        title: "Register Individual | CTF Platform",
-        message: "Server error. Please try again later.",
-      });
-    }
-  }
-
-  // [POST] /auth/register (team)
-  async register(req, res) {
-    try {
-      const { teamName, members } = req.body;
-
-      const renderRegister = (message) => {
-        return res.status(400).render("auth/register", {
-          title: "Register Team | CTF Platform",
-          message,
-        });
-      };
-
-      if (!teamName) {
-        return renderRegister("Team name is required.");
+      if (team) {
+        team.members.push(newUser._id);
+        await team.save();
       }
 
-      const existingTeam = await Team.findOne({ name: teamName });
+      let message = "Registration successful. You can now login.";
 
-      if (existingTeam) {
-        return renderRegister("Team name already exists.");
+      if (team) {
+        message = `Registration successful. Your team code is ${generatedTeamId}. You can now login.`;
       }
-
-      const newTeam = await Team.create({ name: teamName });
 
       return res.render("auth/register", {
-        title: "Register Team | CTF Platform",
-        message: "Team registered successfully.",
+        title: "Register | CTF Platform",
+        message,
       });
     } catch (err) {
-      console.error("RegisterTeam Error:", err);
+      console.error("Register Error:", err);
 
       return res.status(500).render("auth/register", {
-        title: "Register Team | CTF Platform",
+        title: "Register | CTF Platform",
         message: "Server error. Please try again later.",
       });
     }
   }
+
   // [POST] /auth/login
   async login(req, res) {
     try {
@@ -394,6 +383,159 @@ class AuthController {
       console.error("Logout Error:", err);
       res.status(500).render("error/500", {
         message: "Server error during logout.",
+      });
+    }
+  }
+
+  // [GET] /auth/join-team
+  showJoinTeam(req, res) {
+    try {
+      return res.render("auth/join-team", {
+        title: "Join Team | CTF Platform",
+        currentPath: req.path,
+      });
+    } catch (err) {
+      console.error("ShowJoinTeam Error:", err);
+      return res.status(500).render("error/500", {
+        message: "Server error while rendering join team page.",
+      });
+    }
+  }
+
+  // [POST] /auth/join-team
+  async joinTeam(req, res) {
+    try {
+      const { teamId } = req.body;
+      const userId = req.session.user?.id;
+
+      const renderError = (message) => {
+        return res.status(400).render("auth/join-team", {
+          title: "Join Team | CTF Platform",
+          message,
+        });
+      };
+
+      if (!teamId) {
+        return renderError("Please enter team code.");
+      }
+
+      const normalizedTeamId = teamId.trim().toUpperCase();
+
+      const team = await Team.findOne({ teamId: normalizedTeamId });
+
+      if (!team) {
+        return renderError("Invalid team code.");
+      }
+
+      const user = await User.findById(userId);
+
+      if (!user) {
+        return renderError("User not found.");
+      }
+
+      if (user.team) {
+        return renderError("You already have a team.");
+      }
+
+      const isMember = team.members.some(
+        (m) => m.toString() === user._id.toString(),
+      );
+
+      if (!isMember) {
+        team.members.push(user._id);
+        await team.save();
+      }
+
+      user.team = team._id;
+      await user.save();
+
+      return res.redirect("/");
+    } catch (err) {
+      console.error("JoinTeam Error:", err);
+
+      return res.status(500).render("auth/join-team", {
+        title: "Join Team | CTF Platform",
+        message: "Server error. Please try again later.",
+      });
+    }
+  }
+
+  // [GET] /auth/create-team
+  showCreateTeam(req, res) {
+    try {
+      return res.render("auth/create-team", {
+        title: "Create Team | CTF Platform",
+        currentPath: req.path,
+      });
+    } catch (err) {
+      console.error("ShowCreateTeam Error:", err);
+      return res.status(500).render("error/500", {
+        message: "Server error while rendering create team page.",
+      });
+    }
+  }
+
+  // [POST] /auth/create-team
+  async createTeam(req, res) {
+    try {
+      const { teamName } = req.body;
+      const userId = req.session.user?.id;
+
+      const renderError = (message) => {
+        return res.status(400).render("auth/create-team", {
+          title: "Create Team | CTF Platform",
+          currentPath: req.path,
+          message,
+        });
+      };
+
+      if (!teamName || teamName.trim() === "") {
+        return renderError("Please enter team name.");
+      }
+
+      const user = await User.findById(userId);
+
+      if (!user) {
+        return renderError("User not found.");
+      }
+
+      if (user.team) {
+        return renderError("You already have a team.");
+      }
+
+      const cleanTeamName = teamName.trim();
+
+      const existingTeam = await Team.findOne({ name: cleanTeamName });
+
+      if (existingTeam) {
+        return renderError("Team name already exists.");
+      }
+
+      const teamId = crypto.randomBytes(4).toString("hex").toUpperCase();
+
+      const team = await Team.create({
+        name: cleanTeamName,
+        teamId,
+        members: [user._id],
+      });
+
+      user.team = team._id;
+      await user.save();
+
+      req.session.user.team = team.name;
+
+      return res.render("auth/create-team", {
+        title: "Create Team | CTF Platform",
+        currentPath: req.path,
+        message: `Team created successfully. Your team code is ${teamId}.`,
+      });
+    } catch (err) {
+      console.error("CreateTeam Error:", err);
+
+      return res.status(500).render("auth/create-team", {
+        title: "Create Team | CTF Platform",
+        currentPath: req.path,
+        message: "Server error. Please try again later.",
       });
     }
   }

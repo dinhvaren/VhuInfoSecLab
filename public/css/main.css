@@ -968,3 +968,12 @@ canvas#myChart {
     0 0 10px #ff4d6d,
     0 0 20px rgba(255, 77, 109, 0.5);
 }
+
+.text-neon {
+  color: #00ff9f;
+  text-shadow: 
+    0 0 5px #00ff9f,
+    0 0 10px #00ff9f,
+    0 0 20px #00ff9f,
+    0 0 40px #00ff9f;
+}

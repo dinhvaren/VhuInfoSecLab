@@ -58,6 +58,7 @@ app.engine(
           second: "2-digit",
         });
       },
+      not: (value) => !value,
     },
 
     partialsDir: [

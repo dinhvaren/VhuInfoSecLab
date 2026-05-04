@@ -8,14 +8,8 @@ APP_PORT="3002"
 echo "🔁 Pulling latest code..."
 git pull origin main || true
 
-echo "📦 Stopping Docker containers..."
-sudo docker compose down
-
-echo "📦 Building Docker containers..."
-sudo docker compose build --no-cache
-
-echo "🚀 Starting containers..."
-sudo docker compose up -d
+echo "🚀 Deploying..."
+sudo docker compose up -d --build app
 
 echo "🌐 Updating Nginx config..."
 sudo bash -c "cat > /etc/nginx/sites-available/$APP_NAME <<EOF

@@ -75,12 +75,13 @@
                 <input
                   type="text"
                   class="form-control"
-                  name="teamCode"
-                  placeholder="Team Code (e.g., VHU-CTF-01)"
+                  name="teamName"
+                  placeholder="Team Name (optional)"
                 />
-                <small class="form-text text-muted">
-                  Don’t have a team code? Register individually
-                  <a href="/auth/register-individual">here</a>.
+                <small class="form-text text-neon">
+                  If you want to create a new team, enter a team name. If you
+                  already have a team, leave this field empty and use the Join
+                  Team feature after logging in.
                 </small>
               </div>
 
@@ -88,8 +89,18 @@
                 <input
                   type="text"
                   class="form-control"
-                  name="teamName"
-                  placeholder="Team Name"
+                  name="username"
+                  placeholder="Username"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <input
+                  type="email"
+                  class="form-control"
+                  name="email"
+                  placeholder="Email"
                   required
                 />
               </div>
@@ -99,11 +110,19 @@
                   type="password"
                   class="form-control"
                   name="password"
-                  placeholder="New Password"
+                  placeholder="Password"
                   required
                 />
-                <small id="passHelp" class="form-text text-muted">Make sure
-                  nobody's behind you</small>
+              </div>
+
+              <div class="form-group">
+                <input
+                  type="password"
+                  class="form-control"
+                  name="confirm_password"
+                  placeholder="Confirm Password"
+                  required
+                />
               </div>
 
               <div class="custom-control custom-checkbox my-4">
@@ -120,14 +139,13 @@
 
               <button
                 type="submit"
-                class="btn btn-outline-danger btn-shadow px-3 my-2 ml-0 ml-sm-1 text-left typewriter"
+                class="btn btn-outline-danger btn-shadow px-3 my-2"
               >
                 <h4>Register</h4>
               </button>
-
-              <small id="registerHelp" class="mt-2 form-text text-muted">
-                Already Registered?
-                <a href="/auth/login">Login here</a>
+              <small class="form-text text-muted mt-3">
+                Already have an account?
+                <a href="/auth/login" class="text-neon">Login here</a>
               </small>
             </form>
           </div>
