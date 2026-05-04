@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const challengeSchema = new mongoose.Schema({
   title:       { type: String, required: true, unique: true },
-  category:    { type: String, enum: ["Web", "Crypto", "Forensics", "Pwn", "Misc"], required: true },
+  category:    { type: String, enum: ["Web", "Crypto", "Forensics", "Pwn", "Reverse", "Misc", "OSINT"], required: true },
   points:      { type: Number, required: true },
   difficulty:  { type: String, enum: ["Easy", "Medium", "Hard"], default: "Easy" },
   description: { type: String, required: true },
