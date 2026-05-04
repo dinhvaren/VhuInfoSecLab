@@ -1,7 +1,6 @@
 <div id="preloader"></div>
 
 <div id="main">
-  <!-- Glitch Background -->
   <div class="glitch">
     <div style="position: fixed;" class="glitch__img"></div>
     <div style="position: fixed;" class="glitch__img"></div>
@@ -11,22 +10,20 @@
   </div>
 </div>
 
-<!-- Navbar -->
-        <div class="navbar-dark text-white">
-            <div class="container">
-                {{#if user}}
-                    {{#if (isRole user.role "admin")}}
-                        {{> navbar-admin}}
-                    {{else}}
-                        {{> navbar-auth}}
-                    {{/if}}
-                    {{else}}
-                    {{> navbar}}
-                {{/if}}
-            </div>
-        </div>
+<div class="navbar-dark text-white">
+  <div class="container">
+    {{#if user}}
+      {{#if (isRole user.role "admin")}}
+        {{> navbar-admin}}
+      {{else}}
+        {{> navbar-auth}}
+      {{/if}}
+    {{else}}
+      {{> navbar}}
+    {{/if}}
+  </div>
+</div>
 
-<!-- Profile Section -->
 <div class="jumbotron bg-transparent mb-0 pt-3 radius-0">
   <div class="container hackerFont text-light">
     <div class="row">
@@ -38,50 +35,65 @@
       </div>
     </div>
 
-    <!-- User Information -->
     <div class="row mb-5">
       <div class="col-md-6">
-       <table class="table table-borderless text-light">
-        <tbody>
-          <tr>
-            <th scope="row" style="width: 150px;">Username</th>
-            <td>{{profileUser.username}}</td>
-          </tr>
-          <tr>
-            <th>Email</th>
-            <td>{{profileUser.email}}</td>
-          </tr>
-          <tr>
-            <th>Team</th>
-            <td>
-              {{#if profileUser.team}}
-                {{profileUser.team.name}}
-              {{else}}
-                Individual
-              {{/if}}
-            </td>
-          </tr>
-          <tr>
-            <th>Score</th>
-            <td>{{profileUser.score}}</td>
-          </tr>
-          <tr>
-            <th>Rank</th>
-            <td>#{{rank}}</td>
-          </tr>
-          <tr>
-            <th>Last Login</th>
-            <td>{{profileUser.lastLogin}}</td>
-          </tr>
-        </tbody>
-      </table>
+        <table class="table table-borderless text-neon-1">
+          <tbody>
+            <tr>
+              <th scope="row" style="width: 150px;">Username</th>
+              <td>{{profileUser.username}}</td>
+            </tr>
+
+            <tr>
+              <th>Email</th>
+              <td>{{profileUser.email}}</td>
+            </tr>
+
+            <tr>
+              <th>Team</th>
+              <td>
+                {{#if profileUser.team}}
+                  {{profileUser.team.name}}
+                {{else}}
+                  Individual
+                {{/if}}
+              </td>
+            </tr>
+
+            <tr>
+              <th>Team Code</th>
+              <td>
+                {{#if profileUser.team}}
+                  <span>{{profileUser.team.teamId}}</span>
+                {{else}}
+                  —
+                {{/if}}
+              </td>
+            </tr>
+
+            <tr>
+              <th>Score</th>
+              <td>{{profileUser.score}}</td>
+            </tr>
+
+            <tr>
+              <th>Rank</th>
+              <td>#{{rank}}</td>
+            </tr>
+
+            <tr>
+              <th>Last Login</th>
+              <td>{{formatDate profileUser.lastLogin}}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
-    <!-- Submissions History -->
     <div class="row mb-4">
       <div class="col-md-12">
         <h3 class="color_danger bold mb-3">Recent Submissions</h3>
+
         <table class="table table-hover table-striped text-light">
           <thead class="thead-dark">
             <tr>
@@ -92,41 +104,46 @@
               <th>Time</th>
             </tr>
           </thead>
+
           <tbody>
             {{#each submissions}}
-            <tr>
-              <td>{{inc @index}}</td>
-              <td>
-                {{#if challenge}}
-                  {{challenge.title}}
-                {{else}}
-                  Unknown Challenge
-                {{/if}}
-              </td>
-              <td>{{flag}}</td>
-              <td>
-                {{#if isCorrect}}
-                  <span class="badge badge-success">Correct</span>
-                {{else}}
-                  <span class="badge badge-danger">Wrong</span>
-                {{/if}}
-              </td>
-              <td>{{submittedAt}}</td>
-            </tr>
+              <tr>
+                <td>{{inc @index}}</td>
+
+                <td>
+                  {{#if challenge}}
+                    {{challenge.title}}
+                  {{else}}
+                    Unknown Challenge
+                  {{/if}}
+                </td>
+
+                <td>{{flag}}</td>
+
+                <td>
+                  {{#if isCorrect}}
+                    <span class="badge badge-success">Correct</span>
+                  {{else}}
+                    <span class="badge badge-danger">Wrong</span>
+                  {{/if}}
+                </td>
+
+                <td>{{formatDate submittedAt}}</td>
+              </tr>
             {{else}}
-            <tr>
-              <td colspan="5" class="text-center text-muted">
-                No submissions yet.
-              </td>
-            </tr>
+              <tr>
+                <td colspan="5" class="text-center text-muted">
+                  No submissions yet.
+                </td>
+              </tr>
             {{/each}}
           </tbody>
         </table>
       </div>
     </div>
+  </div>
 </div>
 
-<!-- JS -->
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>

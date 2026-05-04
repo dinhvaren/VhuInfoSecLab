@@ -18,10 +18,10 @@
       <a href="/" class="p-3 text-decoration-none {{navClass '/' currentPath}} bold">Home</a>
       <a href="/challenges" class="p-3 text-decoration-none {{navClass '/challenges' currentPath}} bold">Challenges</a>
       <a href="/hackerboard" class="p-3 text-decoration-none {{navClass '/hackerboard' currentPath}} bold">Hackerboard</a>
-      {{#if (not user.team)}}
-        <a href="/auth/create-team" class="p-3 text-decoration-none {{navClass '/auth/create-team' currentPath}} bold" style="white-space: nowrap;">Create Team</a>
-        <a href="/auth/join-team" class="p-3 text-decoration-none {{navClass '/auth/join-team' currentPath}} bold" style="white-space: nowrap;">Join Team</a>
-      {{/if}}
+        {{#if (not user.team)}}
+          <a href="/auth/create-team" class="p-3 text-decoration-none text-light {{activeClass '/auth/create-team' currentPath}} bold" style="nowrap">Create Team</a>
+          <a href="/auth/join-team" class="p-3 text-decoration-none text-light {{activeClass '/auth/join-team' currentPath}} bold" style="nowrap">Join Team</a>
+        {{/if}}
       <a href="/profile" class="p-3 text-decoration-none {{navClass '/profile' currentPath}} bold">Profile</a>
       <a href="/feedback" class="p-3 text-decoration-none {{navClass '/feedback' currentPath}} bold">Feedback</a>
       <a href="/auth/logout" class="p-3 text-decoration-none text-danger bold">Logout</a>

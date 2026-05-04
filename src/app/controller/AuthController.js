@@ -392,7 +392,7 @@ class AuthController {
     try {
       return res.render("auth/join-team", {
         title: "Join Team | CTF Platform",
-        currentPath: req.path,
+        currentPath: req.originalUrl.split("?")[0],
       });
     } catch (err) {
       console.error("ShowJoinTeam Error:", err);
@@ -465,7 +465,7 @@ class AuthController {
     try {
       return res.render("auth/create-team", {
         title: "Create Team | CTF Platform",
-        currentPath: req.path,
+        currentPath: req.originalUrl.split("?")[0],
       });
     } catch (err) {
       console.error("ShowCreateTeam Error:", err);

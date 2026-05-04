@@ -259,7 +259,7 @@ class HomeController {
       }
 
       const user = await User.findById(userId)
-        .populate("team", "name score")
+        .populate("team", "name teamId score")
         .populate("solved", "title category points")
         .select("-password")
         .lean();

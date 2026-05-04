@@ -141,8 +141,10 @@ body {
     "Apple Color Emoji",
     "Segoe UI Emoji",
     "Segoe UI Symbol";
-  color: rgba(255, 255, 255, 0.8);
-  text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+  color: #ffffff;
+  text-shadow:
+    0 0 2px #000,
+    0 0 6px rgba(0, 0, 0, 0.9);
 }
 
 .color_danger {
@@ -963,7 +965,7 @@ canvas#myChart {
   font-size: 14px;
   margin-bottom: 15px;
   letter-spacing: 1px;
-  text-shadow: 
+  text-shadow:
     0 0 5px #ff4d6d,
     0 0 10px #ff4d6d,
     0 0 20px rgba(255, 77, 109, 0.5);
@@ -971,9 +973,25 @@ canvas#myChart {
 
 .text-neon {
   color: #00ff9f;
-  text-shadow: 
+  text-shadow:
     0 0 5px #00ff9f,
     0 0 10px #00ff9f,
     0 0 20px #00ff9f,
     0 0 40px #00ff9f;
+}
+
+.text-neon-1 {
+  color: #ffd60a;
+  text-shadow:
+    0 0 3px #ffd60a,
+    0 0 6px rgba(255, 214, 10, 0.6),
+    0 0 12px rgba(255, 214, 10, 0.3);
+}
+
+.text-grey {
+  color: #e6e6e6;
+  font-weight: 400;
+  text-shadow:
+    0 0 2px #000,
+    0 0 6px rgba(0,0,0,0.8);
 }
