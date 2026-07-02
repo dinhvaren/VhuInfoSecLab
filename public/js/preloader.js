@@ -60,7 +60,7 @@ var strings = [
   "Loading content",
   "Page rendered",
   "Starting display manager",
-  "WELCOME TO VHU INSEC LAB 2025",
+  "WELCOME TO VHU INSEC LAB 2026",
   "Initializing..."
 ];
 

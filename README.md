@@ -1,4 +1,4 @@
-# VHU Challenge 2025
+# VHU Challenge 2026
 
 **VHU Challenge** là cuộc thi **an ninh mạng thường niên** do **Trường Đại học Văn Hiến (VHU)** tổ chức — sân chơi dành cho sinh viên đam mê **Information Security**, **CTF (Capture The Flag)** và **Ethical Hacking**.
 
