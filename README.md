@@ -93,8 +93,8 @@ Toàn bộ nội dung challenge thuộc sở hữu của **VHU InfoSec Lab**.
 
 ### Kết nối
 
-* Portfolio: [https://d1nhvar3n.id.vn](https://d1nhvar3n.id.vn)
+* Portfolio: [https://dinhvaren.io.vn](https://dinhvaren.io.vn)
 * GitHub: [https://github.com/dinhvaren](https://github.com/dinhvaren)
-* Email: [dinhvaren@vhu.edu.vn](mailto:dinhvaren@vhu.edu.vn)
+* Email: [dinhlnng2003@gmail.com](mailto:dinhlnng2003@gmail.com)
 
 > *“Hãy luyện tập như đang chiến đấu — hack như đang học.”*
